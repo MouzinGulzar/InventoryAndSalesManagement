@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "dev": "concurrently --kill-others \"nodemon app.js\" \"sass --watch scss/main.scss:public/styles/style.css\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
