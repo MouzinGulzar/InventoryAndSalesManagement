@@ -1,0 +1,55 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.my-4
+            a(href="/customers")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Customers
+            a(href=`/customers/edit-customer/${customer._id}`)
+                button.btn.btn-primary.btn-icon
+                    span.ms-2 Edit Customer
+                    ion-icon(name="create")
+        
+        .d-flex.gap-3.align-items-center.flex-wrap
+            h1.my-0
+                | #{customer.name.toUpperCase()}
+                span.text-primary  • 
+                if customer.loyaltyInfo.loyaltyPoints <= 3
+                    span.text-danger #{customer.loyaltyInfo.loyaltyPoints}LP
+                else if customer.loyaltyInfo.loyaltyPoints <= 7
+                    span.text-warning.text-shadow-sm #{customer.loyaltyInfo.loyaltyPoints}LP
+                else
+                    span.text-success #{customer.loyaltyInfo.loyaltyPoints}LP
+            a(href=`/sales?customer=${customer._id}`).basic-anchor
+                    ion-icon.fs-1(name="arrow-forward-circle")
+        span.fs-6.text-muted #{customer.address}
+
+        div.d-flex.align-items-center.gap-1.flex-wrap
+            a(href="mailto:#{customer.email}").basic-anchor
+                span.fs-6 #{customer.email}
+            if customer.email
+                span.fs-6.text-muted  |
+            a(href="tel:#{customer.phone}").basic-anchor
+                span.fs-6 #{customer.phone}
+
+        .d-flex.justify-content-between.gap-2.flex-wrap.mt-2.mb-5.border-bottom.pb-3
+            .mb-0.flex-fill
+                span.fs-6.fst-italic #{customer.note}
+        
+        .d-flex.justify-content-between.gap-2.flex-wrap
+            .mb-3.flex-fill
+                label.form-label.my-0(for='exampleText3') TOTAL NUMBER OF SALES
+                span.d-block.fs-4 #{totalSalesNo}
+            .mb-3.flex-fill.text-center
+                label.form-label.my-0(for='exampleText3') TOTAL NUMBER OF PRODUCTS
+                span.d-block.fs-4 #{totalProductsNo}
+            .mb-3.flex-fill.text-end
+                label.form-label.my-0(for='exampleText2') TOTAL SALES
+                span.d-block.fs-4 ₹ #{totalSales}
+        
+        .d-grid.gap-2.mt-3
+            button.btn.btn-danger.btn-icon.confirm-first(data-url=`/customers/delete-customer/${customer._id}`)
+                span Delete
+                ion-icon(name="trash")

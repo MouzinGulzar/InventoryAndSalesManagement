@@ -1,0 +1,28 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-5.mb-4
+            a(href="/categories")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Categories
+            a(href="/categories/add-category")
+                button.btn.btn-primary.btn-icon
+                    span Add Category
+                    ion-icon(name="add")
+
+        h2.mt-3.mb-0 Edit Category
+        span.mt-0.mb-4.d-block #{category.name.toUpperCase()}
+        form(action=`/categories/edit-category/${category._id}`, method='POST')
+            .d-flex.justify-content-between.gap-4
+                .mb-3.flex-fill
+                    label.form-label(for='exampleText2') Category
+                    input#exampleText2.form-control(type='text' name="name" autocomplete="off" required value=category.name)
+            .d-flex.justify-content-between.gap-4
+                .mb-4.flex-fill
+                    label.form-label(for='exampleText3') Category Description
+                    textarea#exampleText3.form-control(type='text' name="description" rows="3")=category.description
+
+            .d-grid
+                button.btn.btn-primary(type='submit') Update

@@ -1,0 +1,55 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href=`/inventory/${inventoryItem._id}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Item
+
+        h1.my-0 Edit Item
+
+        form(action=`/inventory/edit-item/${inventoryItem._id}`, method="post") 
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-3
+                .flex-fill
+                    label(for="productName") Name
+                    input.form-control(type="text", name="productName", placeholder="Product Name" value=inventoryItem.product required autocomplete="off")
+                .flex-fill
+                    label(for="quantity") Quanity
+                    input.form-control(type="number", name="quantity", placeholder="Quantity" value=inventoryItem.quantity required autocomplete="off")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-3
+                .flex-fill
+                    label(for="category") Category
+                    select.form-select(name="category" required)
+                        option(disabled) Category
+                        each category in categories
+                            option(value=category._id selected=(inventoryItem.category.name == category.name)) #{category.name.toUpperCase()}
+                .flex-fill
+                    label(for="status") Status
+                    select.form-select(name="status" required)
+                        option(disabled) Status
+                        option(value="active" selected=(inventoryItem.status == "active")) Active
+                        option(value="discontinued" selected=(inventoryItem.status == "discontinued")) Discontinued
+                        option(value="out of stock" selected=(inventoryItem.status == "out of stock")) Out of Stock
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-3
+                .flex-fill
+                    label(for="price") Cost Price
+                    input.form-control(type="text", name="costPrice", placeholder="cost Price" value=inventoryItem.unitCostPrice required autocomplete="off")
+                .flex-fill
+                    label(for="sellPrice") Sell Price
+                    input.form-control(type="text", name="sellPrice", placeholder="Sell Price" value=inventoryItem.unitSellPrice required autocomplete="off")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-3
+               .flex-fill
+                    label(for="supplier") Supplier
+                    select.form-select(name="supplier" required)
+                        option(disabled) Supplier
+                        each supplier in suppliers
+                            option(value=supplier._id selected=(inventoryItem.supplier.name == supplier.name)) #{supplier.name.toUpperCase()}
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-3
+                .flex-fill
+                    label(for="description") Description
+                    textarea.form-control(name="description", rows="3") #{inventoryItem.description}
+            
+            .d-grid.mt-5
+                button.btn.btn-primary(type="submit") Save Changes

@@ -1,0 +1,121 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        h1.my-0 Admin Dashboard
+
+        //- ACTION BUTTONS
+        h4.mt-5.mb-2 Actions
+        .row
+            a(href="/suppliers").col.py-3
+                button.btn.btn-primary.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="people-circle").fs-1
+                    span.fs-6 Suppliers
+            a(href="/inventory").col.py-3
+                button.btn.btn-primary.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="cube").fs-1
+                    span.fs-6 Inventory
+            a(href="/categories").col.py-3
+                button.btn.btn-primary.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="list").fs-1
+                    span.fs-6 Categories
+            a(href="/customers").col.py-3
+                button.btn.btn-primary.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="people").fs-1
+                    span.fs-6 Customers
+            a(href="/sales").col.py-3
+                button.btn.btn-primary.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="cart").fs-1
+                    span.fs-6 Sales
+        .row
+            a(href="/suppliers/add-supplier").col.py-3
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="person-add").fs-1
+                    span.fs-6 Add Supplier
+            a(href="/inventory/add-item").col.py-3
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="bag-add").fs-1
+                    span.fs-6 Add Item
+            a(href="/categories/add-category").col.py-3
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="add-circle").fs-1
+                    span.fs-6 Add Category
+            a(href="/customers/add-customer").col.py-3
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="person-add").fs-1
+                    span.fs-6 Add Customer
+            a(href="/sales/add-sale").col.py-3
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="bag-add").fs-1
+                    span.fs-6 Add Sale
+        .row
+            a(href="/users").col.py-3
+                button.btn.btn-primary.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="person").fs-1
+                    span.fs-6 Users
+            a(href="/users/add-user").col.py-3
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="person-add").fs-1
+                    span.fs-6 Add User
+
+        .row
+            a(href="/logs").col.py-3
+                button.btn.btn-danger.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:100% !important;")
+                    ion-icon(name="book").fs-1
+                    span.fs-6 Logs
+
+        //- INVENTORY 
+        h4.mt-5.mb-2 Inventory
+        .d-flex.justify-content-start.gap-3.align-items-start.flex-wrap
+             form(action="/inventory", method="GET")
+                input(type="hidden", name="status", value="active")
+                button.btn.btn-success.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(type="submit", style="width:15rem !important;")
+                    ion-icon(name="bag-check").fs-1
+                    div
+                        span.fs-3.d-block.mb-0 #{inventory.filter((product) => product.status == "active").length}
+                        span.fs-5.mt-0.d-block Active
+                        span.fs-6.mt-0.d-block #{inventory.filter((product) => product.status == "active").reduce((acc, product) => acc + product.quantity, 0)} Items
+             form(action="/inventory", method="GET")
+                input(type="hidden", name="status", value="discontinued")
+                button.btn.btn-secondary.border.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:15rem !important;")
+                    ion-icon(name="bag-remove").fs-1
+                    div
+                        span.fs-3.d-block.mb-0 #{inventory.filter((product) => product.status == "discontinued").length}
+                        span.fs-5.mt-0.d-block Discontinued
+                        span.fs-6.mt-0.d-block #{inventory.filter((product) => product.status == "discontinued").reduce((acc, product) => acc + product.quantity, 0)} Items
+             form(action="/inventory", method="GET")
+                input(type="hidden", name="status", value="out of stock")
+                button.btn.btn-danger.btn-icon.d-flex.flex-column.align-items-center.px-5.py-4(style="width:15rem !important; height: 100%;")
+                    ion-icon(name="bag").fs-1
+                    div
+                        span.fs-3.d-block.mb-0 #{inventory.filter((product) => product.status == "out of stock").length}
+                        span.fs-5.mt-0.d-block Out of Stock
+                        span.fs-6.mt-0.d-block Get 'em
+
+        //- SALES PLOT
+        h4.mt-5.mb-2 Sales
+        .plot
+            .d-flex.align-items-center.justify-content-center.gap-2.my-3
+                span Sales in
+                select.options
+                    option(value="url:/?salesFilter=last7days" selected=(salesFilter == undefined || "")) Last 7 days
+                    option(value="url:/?salesFilter=last30days"  selected=(salesFilter == 'last30days')) Last 30 days
+                sapn (#{totalSale})
+            #salesPlot
+    
+        //- TOP SUPPLIERS
+        h4.mt-5.mb-2 Top Suppliers
+        .d-flex.justify-content-start.gap-3.align-items-start.flex-wrap
+            each supplier in topSuppliers
+                a(href=`/suppliers/${supplier._id}`)
+                    button.btn.btn-light.border.d-flex.flex-column.align-items-center.px-5.py-4
+                        span.fs-3.d-block.mb-0 #{supplier.name}
+                        span.fs-5.mt-0.d-block #{supplier.totalPurchases} Purchases
+                        span.fs-6.mt-0.d-block #{supplier.totalItems} Total Items
+    script.
+        // Parse the data and layout from the server
+        const plotData = !{plotData};
+        const layout = !{layout};
+
+        // Use Plotly to plot the data
+        Plotly.newPlot('salesPlot', plotData, layout);

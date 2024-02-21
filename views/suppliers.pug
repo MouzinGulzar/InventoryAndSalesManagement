@@ -1,0 +1,115 @@
+extends ./layouts/adminLayout.pug
+include ./layouts/pagination.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+            a(href="/suppliers/add-supplier")
+                button.btn.btn-primary.btn-icon
+                    span Add Supplier
+                    ion-icon(name="add")
+            
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+            .flex-fill
+                h1.my-0 Suppliers
+                if query && tsr
+                    span.my-0 w/ TSR #{tsr} & Search term #{query.toUpperCase()}
+                else if query
+                    Search w/ Search term #{query.toUpperCase()}
+                else if tsr
+                    span.my-0 w/ TSR #{tsr}
+                else
+                    span.my-0 ALL
+        
+        if query
+            a(href="/suppliers").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        h5.mt-4 Filter by TSR
+        div
+            -let tsrArray = [1, 2, 3, 4, 5]
+            each el in tsrArray
+                button.m-1.btn.border#tsrFilter(data-tsr=el class=(tsr == el ? "btn-primary text-light" : "btn-light text-dark"))
+                    -for(let i=0; i<el; i++) {
+                        span
+                            ion-icon(name="star")
+                    -}
+            button.m-1.btn.border#tsrFilter(data-tsr="" class=(tsr == "" ? "btn-primary text-light" : "btn-light text-dark")) All
+            
+
+        form.search-form(action="/suppliers", method="GET" data-action="/suppliers")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q" placeholder="Search for a supplier" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if suppliers.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No suppliers found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/suppliers")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Suppliers
+                            ion-icon(name="arrow-forward")
+
+        each supplier in suppliers
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            span.card-subtitle.text-muted SUPPLIER
+                            a(href=`/suppliers/${supplier._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 #{supplier.name.toUpperCase()}
+                            span.card-subtitle.text-muted ADDRESS
+                            if supplier.address.split("").length > 30
+                                span.card-title.d-block #{supplier.address.split("").slice(0, 30).join("")}...
+                            else
+                                span.card-title.d-block #{supplier.address}
+                        .flex-fill.text-end
+                            span.card-subtitle.text-muted PHONE
+                            a(href=`tel:${supplier.contact}`).basic-anchor
+                                span.card-title.fw-600.fs-6.d-block #{supplier.contact}
+                            span.card-subtitle.text-muted EMAIL
+                            if supplier.email
+                                a(href=`mailto:${supplier.email}`).basic-anchor
+                                    span.card-title.fw-600.fs-6.d-block #{supplier.email}
+                            else
+                                span.card-title.fw-600.fs-6.d-block N/A
+                    
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+                        .flex-fill
+                            button.btn.btn-danger.btn-icon.mb-3.w-100.confirm-first(data-url=`/suppliers/delete-supplier/${supplier._id}`)
+                                span Delete
+                                ion-icon(name="trash")
+                        .flex-fill
+                            a(href=`/suppliers/edit-supplier/${supplier._id}`) 
+                                    button.btn.btn-primary.btn-icon.mb-3.w-100
+                                        span Edit
+                                        ion-icon(name="create")
+        
+        +pagination("/suppliers", suppliers, page, totalSuppliers, {q: query, tsr})
+
+    script.
+         document.addEventListener('DOMContentLoaded', function() {
+            const tsrFilter = document.querySelectorAll('#tsrFilter');
+            tsrFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('tsr', filter.getAttribute('data-tsr'));
+                    window.location.href = `/suppliers?${searchParams.toString()}`;
+                });
+            });
+         })

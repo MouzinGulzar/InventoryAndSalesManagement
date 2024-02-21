@@ -1,0 +1,286 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.mt-5.mb-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/sales")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Inventory
+
+        h2.mb-4 Add a Sale
+        form(action=`/sales/add-sale`, method='POST')
+            //- Customer Search
+            .d-flex.justify-content-between.gap-2.align-items-end
+                .flex-fill
+                    input#customer(type="hidden" name="customer" required)
+                    label.form-label(for='exampleText2') Customer
+                    input#customer-search.form-control(type='search' autocomplete="off" placeholder="Search customers...")
+                button(type="button").clr-sel-btn#cust-clr-sel-btn
+                    ion-icon(name="remove-circle")
+            .d-flex.justify-content-between.gap-4
+                .search-div#customer-search-div
+                    ul.search-results#customer-search-results
+                        // Customer list items will be populated here
+
+                    div.no-result-msg#no-customer-msg
+                        ion-icon(name="alert-circle")
+                        | No customer found
+                    a(href="/customers/add-customer")
+                        button(type="button").no-result-btn#add-customer-button(style='display:none') Add Customer
+
+            //- Product Search
+            .added-products#added-products
+                h5.mt-4(style="display: none;") Added Products
+                //- add total price
+                h3.mt-4(style="display: none;")
+                    | Total: ₹
+                    span.total-price 0
+
+
+                //- Added products will be populated here. Fields to shown to user are here
+            .products-data-to-send
+                //- Hidden fields to send to server are here
+
+            h5.mt-4 Add a Product
+            .d-flex.justify-content-between.gap-2.align-items-end
+                .flex-fill
+                    label.form-label(for='exampleText2') Product
+                    input#product-search.form-control(type='search' autocomplete="off" placeholder="Search products...")
+                div
+                    label.form-label(for='exampleText2') Price
+                    input#product-price.form-control(type='number' min="1")
+                div
+                    label.form-label(for='exampleText2') Quantity
+                    input#product-quantity.form-control(type='number' min="1")
+                button.add-btn#add-prod-btn(type="button") 
+                    ion-icon(name="add-circle")
+                button(type="button").clr-sel-btn#prod-clr-sel-btn
+                    ion-icon(name="remove-circle")
+            .d-flex.justify-content-between.gap-4
+                .search-div#product-search-div
+                    ul.search-results#product-search-results
+                        // Product list items will be populated here
+
+                    div.no-result-msg#no-product-msg
+                        ion-icon(name="alert-circle")
+                        | No product found
+
+                    a(href="/inventory/add-item")
+                        button(type="button").no-result-btn#add-new-prod-btn(style='display:none') Add Product
+            .d-flex.justify-content-between.gap-4.mt-4.mb-4
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Payment Method
+                    select#exampleText3.form-select(type='text' name="paymentMethod" required)
+                        option(value="" disabled selected) Select
+                        option(value="cash") Cash 
+                        option(value="card") Card 
+                        option(value="online") Online 
+                        option(value="cheque") Cheque 
+            .d-grid
+                button.btn.btn-primary(type='submit') Checkout
+
+    script.
+        const capitalizeWords = str => str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+
+        //- Customer Search Logic
+        const custSearchField = document.getElementById('customer-search');
+        const customerSearchDiv = document.getElementById('customer-search-div')
+        const custResultsContainer = document.getElementById('customer-search-results');
+        const addCustomerBtn = document.getElementById("add-customer-button");
+        const custClrSelBtn = document.getElementById("cust-clr-sel-btn");
+        const custField = document.getElementById('customer');
+        const noCustMsg = document.getElementById('no-customer-msg');
+
+        customerSearchDiv.style.display = "none";
+        custClrSelBtn.style.display = "none";
+        noCustMsg.style.display = "none";
+
+        custSearchField.addEventListener('input', async (e) => {
+            custClrSelBtn.style.display = "none";
+            custField.value = "";
+
+            const searchTerm = e.target.value;
+            if (searchTerm.length > 2) { // Trigger search after 2 characters
+                const response = await fetch(`/api/search-customers?term=${searchTerm}`);
+                const customers = await response.json();
+                if(customers.length > 0) {
+                    customerSearchDiv.style.display = "block"
+                    custResultsContainer.innerHTML = customers.map(customer => {
+                        return `
+                            <li data-customer-id=${customer._id} data-customer-full-name='${customer.name}'>
+                                <span>
+                                    <span id="name">${customer.name.split(" ").length > 2 ? (customer.name.split(" ").slice(0, 2).join(" ") + " ...") : customer.name}</span> • <span id="lPoints">${customer.loyaltyInfo.loyaltyPoints}</span><br>
+                                    <span id="address">${customer.address.length > 25 ? (customer.address.slice(0, 25) + " ...") : customer.address}</span>
+                                </span>
+                                <span>
+                                    <span id="email">${customer.email || "No Email"}</span>
+                                    <span id="phone">${customer.phone}</span>
+                                </span>
+                            </li>`
+                    }).join('');
+                    addCustomerBtn.style.display = "none";
+                    noCustMsg.style.display = "none"
+                } else {
+                    custResultsContainer.innerHTML = '';
+                    customerSearchDiv.style.display = "block"
+                    addCustomerBtn.style.display = "block ";
+                    noCustMsg.style.display = "flex"
+                }
+                console.log(customers);
+            } else {
+                customerSearchDiv.style.display = "none"
+                custResultsContainer.innerHTML = '';
+            }
+        });
+
+        custResultsContainer.addEventListener("click", (e) => {
+            const clickedLi = e.target.closest("li");
+            if(clickedLi) {
+                const selectedCustomerId = clickedLi.getAttribute('data-customer-id');
+               custField.value = selectedCustomerId;
+                // Optionally, update the search field with the selected customer's name
+                custSearchField.value = clickedLi.getAttribute('data-customer-full-name');
+                custClrSelBtn.style.display = "block";
+                customerSearchDiv.style.display = "none"
+                custResultsContainer.innerHtml = '';
+            }
+        })
+
+        custClrSelBtn.addEventListener("click", (e) => {
+           custField.value = "";
+            custSearchField.value = "";
+            custClrSelBtn.style.display = "none";
+        })
+
+        const prodSearchField = document.getElementById('product-search');
+        const productSearchDiv = document.getElementById('product-search-div')
+        const prodQuantity = document.getElementById('product-quantity');
+        const prodPrice = document.getElementById('product-price');
+        const hiddenProdsCont = document.querySelector(".products-data-to-send")
+        const prodResultsContainer = document.getElementById('product-search-results');
+        const addNewProdBtn = document.getElementById("add-new-prod-btn");
+        const prodClrSelBtn = document.getElementById("prod-clr-sel-btn");
+        const noProdMsg = document.getElementById('no-product-msg');
+
+        const addProdBtn = document.getElementById('add-prod-btn');
+
+        productSearchDiv.style.display = "none";
+        prodClrSelBtn.style.display = "none";
+        noProdMsg.style.display = "none";
+
+        prodSearchField.addEventListener('input', async (e) => {
+            prodClrSelBtn.style.display = "none";
+
+            const searchTerm = e.target.value;
+            if (searchTerm.length > 2) { // Trigger search after 2 characters
+                const response = await fetch(`/api/search-inventory?term=${searchTerm}`);
+                const products = await response.json();
+                if(products.length > 0) {
+                    productSearchDiv.style.display = "block"
+                    prodResultsContainer.innerHTML = products.map(product => {
+                        product.product = capitalizeWords(product.product)
+                        
+                        return `
+                            <li data-product-id=${product._id} data-product-name='${product.product}' data-product-price='${product.unitSellPrice}'>
+                                <span>
+                                    <span>
+                                        <span id="product">${product.product.split(" ").length > 4 ? (product.product.split(" ").slice(0, 2).join(" ") + " ...") : product.product}</span> • <span id="quantity" class="${product.quantity < 10 ? "low" : "high"}">${product.quantity}</span>
+                                    </span><br>
+                                    <span id="category">in <span id="category-tag">${product.category.name}</span></span><br>
+                                    <span id="description">${product.description.length > 50 ? (product.description.slice(0, 50) + " ...") : product.description}</span>
+                                </span>
+                                <span>
+                                    <span id="price">₹${product.unitSellPrice}</span><br>
+                                    <span id="supplier">${product.supplier.name.split(" ").length > 2 ? (product.supplier.name.split(" ").slice(0, 2).join(" ") + " ...") : product.supplier.name}</span>
+                                </span>
+                            </li>`
+                    }).join('');
+                    addNewProdBtn.style.display = "none";
+                    noProdMsg.style.display = "none";
+                } else {
+                    prodResultsContainer.innerHTML = '';
+                    productSearchDiv.style.display = "block"
+                    addNewProdBtn.style.display = "block ";
+                    noProdMsg.style.display = "flex";
+                }
+                console.log(products);
+            } else {
+                productSearchDiv.style.display = "none"
+                prodResultsContainer.innerHTML = '';
+            }
+        });
+
+        prodResultsContainer.addEventListener("click", (e) => {
+            const clickedLi = e.target.closest("li");
+            if(clickedLi) {
+                const selectedProductId = clickedLi.getAttribute('data-product-id');
+                prodSearchField.value = `${clickedLi.getAttribute('data-product-name')}`;
+                prodPrice.value = clickedLi.getAttribute('data-product-price');
+                prodSearchField.setAttribute("data-product-id",selectedProductId);
+                prodClrSelBtn.style.display = "block";
+                productSearchDiv.style.display = "none"
+                prodResultsContainer.innerHtml = '';
+            }
+        })
+
+        prodClrSelBtn.addEventListener("click", (e) => {
+            prodSearchField.value = "";
+            prodClrSelBtn.style.display = "none";
+        })
+
+        const addedProductsDiv = document.getElementById('added-products');
+        const addAnotherProdBtn = document.getElementById('add-another-product');
+        const totalPrice = document.querySelector(".total-price");
+
+        function delProdFn(inpId) {
+            const usrInp = document.getElementById(`usr-shown-field-${inpId}`);
+            usrInp.remove();
+
+            const product = document.querySelector(`input[name="product${inpId}"]`);
+            const quantity = document.querySelector(`input[name="quantity${inpId}"]`);
+            const price = document.querySelector(`input[name="price${inpId}"]`);
+
+            totalPrice.innerHTML = parseInt(totalPrice.innerHTML) - (parseInt(quantity.value) * parseInt(product.getAttribute("prod-data-price")));
+            
+            product.remove();
+            quantity.remove();
+            price.remove();
+
+            if(addedProductsDiv.querySelectorAll("div").length < 1) {
+                addedProductsDiv.querySelector("h5").style.display = "none";
+                addedProductsDiv.querySelector("h3").style.display = "none";
+            }
+        }
+
+        let currInpId = 1;
+        addProdBtn.addEventListener("click", () => {
+            if(prodSearchField.value && prodQuantity.value) {
+                const usrInp = `
+                    <div id="usr-shown-field-${currInpId}" class="d-flex justify-content-between gap-2.align-items-end mt-3">
+                        <input class="form-control" disabled value="${prodSearchField.value.split("-")[0]}(${prodQuantity.value}x${prodPrice.value})">
+                        <button type="button" onclick=delProdFn(${currInpId}) class="clr-sel-btn del-prod-btn"><ion-icon name="remove-circle"></button>
+                    </div>`;
+
+                addedProductsDiv.querySelector("h5").style.display = "block";
+                addedProductsDiv.querySelector("h3").style.display = "block";
+                addedProductsDiv.insertAdjacentHTML('beforeend', usrInp);
+                prodClrSelBtn.style.display = "none";
+
+                const product = `<input type="hidden" prod-data-price="${parseInt(prodPrice.value)}" name="product${currInpId}" value="${prodSearchField.getAttribute("data-product-id")}">`;
+                const quantity = `<input type="hidden" name="quantity${currInpId}" value="${prodQuantity.value}">`;
+                const price = `<input type="hidden" name="price${currInpId}" value="${prodPrice.value}">`;
+
+                hiddenProdsCont.insertAdjacentHTML('beforeend', product)
+                hiddenProdsCont.insertAdjacentHTML('beforeend', quantity);
+                hiddenProdsCont.insertAdjacentHTML('beforeend', price);
+
+                totalPrice.innerHTML = parseInt(totalPrice.innerHTML) + (parseInt(prodQuantity.value) * parseInt(prodPrice.value));
+
+                currInpId++;
+
+                prodSearchField.value = "";
+                prodQuantity.value = "";
+                prodPrice.value = "";
+            }
+        })

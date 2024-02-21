@@ -1,0 +1,19 @@
+mixin pagination(baseUrl, data, page, total, params)
+    if data.length > 0
+        .d-flex.justify-content-center.align-items-center.mt-5.mx-auto
+            ul.pagination
+                li.page-item(class=page == 1 ? 'disabled' : '')
+                    a.page-link(href=`${baseUrl}?${Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&')}&page=${page - 1}`) Previous
+                - let totalPages = Math.ceil(total / 100)
+                - let startPage = Math.max(1, page - 5)
+                - let endPage = Math.min(totalPages, page + 5)
+                if (endPage - startPage) < 10
+                    if startPage == 1
+                        - endPage = Math.min(10, totalPages)
+                    else
+                        - startPage = Math.max(1, totalPages - 6)
+                - for (let i = startPage; i <= endPage; i++)
+                    li.page-item(class=page == i ? 'active' : '')
+                        a.page-link(href=`${baseUrl}?${Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&')}&page=${i}`) #{i}
+                li.page-item(class=page == totalPages ? 'disabled' : '')
+                    a.page-link(href=`${baseUrl}?${Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&')}&page=${page + 1}`) Next

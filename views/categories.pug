@@ -1,0 +1,83 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+            a(href="/categories/add-category")
+                button.btn.btn-primary.btn-icon
+                    span Add Category
+                    ion-icon(name="add")
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+            .flex-fill
+                h1.my-0 Categories
+                if query
+                    Search w/ Search term #{query.toUpperCase()}
+                else
+                    span.my-0 ALL
+        
+        if query
+            a(href="/categories").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")         
+
+        form.search-form(action="/categories", method="GET" data-action="/categories")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q" placeholder="Search for a category" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if categories.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No categories found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/categories")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Categories
+                            ion-icon(name="arrow-forward")
+
+        each category in categories
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .d-flex.justify-content-between.gap-3.align-items-start.flex-wrap.flex-column
+                            .flex-fill
+                                span.card-subtitle.text-muted CATEGORY
+                                a(href=`/inventory?category=${category._id}`).basic-anchor
+                                    h5.card-title.fw-600.fs-3 #{category.name.toUpperCase()}
+                            .flex-fill
+                                span.card-subtitle.text-muted ITEMS
+                                h5.card-title.fw-600.fs-3.mb-0 #{category.counts.active + category.counts.discontinued + category.counts["out of stock"]}
+                        .flex-fill.text-end
+                            span.card-subtitle.text-muted ACTIVE
+                            h5.card-title.text-success.fw-600.mb-1.fs-5 #{category.counts.active}
+                            span.card-subtitle.text-muted DISCONTINUED
+                            h5.card-title.text-muted.fw-600.mb-1.fs-5 #{category.counts.discontinued}
+                            span.card-subtitle.text-muted OUT OF STOCK
+                            h5.card-title.text-danger.fw-600.mb-1.fs-5 #{category.counts["out of stock"]}
+
+                    if category.description
+                        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3.border-top.pt-3
+                            .flex-fill
+                                p.card-subtitle.text-muted.mb-1 #{category.description}
+
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+                        .flex-fill
+                            button.btn.btn-danger.btn-icon.mb-3.w-100.confirm-first(data-url=`/categories/delete-category/${category._id}`)
+                                span Delete
+                                ion-icon(name="trash")
+                        .flex-fill
+                            a(href=`/categories/edit-category/${category._id}`) 
+                                    button.btn.btn-primary.btn-icon.mb-3.w-100
+                                        span Edit
+                                        ion-icon(name="create")

@@ -1,0 +1,104 @@
+.login-page {
+  overflow-y: hidden;
+  overflow-x: hidden;
+
+  &__bg {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    // filter: blur(5px);
+  }
+
+  .form {
+    &__logo {
+      width: 10rem;
+      margin-bottom: 5rem;
+
+      @include phone {
+        width: 8rem;
+      }
+    }
+    form {
+      @include tablet {
+        width: 95%;
+      }
+      //   padding-top: 10rem;
+      width: 40rem;
+      max-width: 40rem;
+      padding: 7rem 5rem;
+      padding-top: 5rem;
+
+      @include tablet {
+        padding: 5rem 2rem;
+      }
+
+      @include phone {
+        padding: 3rem 1rem;
+      }
+      border-radius: 15px;
+      background: transparent;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      input {
+        width: 100%;
+        padding: 1rem 2rem;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+        font-weight: 500;
+        background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        color: white;
+        transition: all 0.1s ease-in-out;
+
+        &:focus {
+          background: rgba(255, 255, 255, 0.75);
+          color: black;
+          backdrop-filter: blur(5px);
+
+          &::placeholder {
+            color: rgb(100, 100, 100);
+          }
+        }
+
+        &::placeholder {
+          color: #dddddd;
+        }
+      }
+    }
+
+    button {
+      width: 100%;
+      padding: 1rem 2rem;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+      margin-bottom: 2rem;
+      font-size: 1.2rem;
+      font-weight: 500;
+      background: rgba(36, 51, 255, 0.3);
+      backdrop-filter: blur(5px);
+      color: white;
+      transition: all 0.1s ease-in-out;
+      cursor: pointer;
+      font-weight: bold;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.75);
+        color: rgba(36, 51, 255, 1);
+        backdrop-filter: blur(5px);
+      }
+    }
+  }
+}

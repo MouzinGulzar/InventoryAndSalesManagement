@@ -1,0 +1,34 @@
+table {
+  border-radius: 10px;
+
+  tr {
+    th,
+    td {
+      text-align: center;
+      border: 1px solid #ccc;
+      margin: 0 1rem;
+      vertical-align: middle;
+      padding: 0.5rem !important;
+    }
+
+    th {
+      background-color: #eeeeee !important;
+    }
+
+    td {
+      a {
+        text-decoration: none;
+      }
+      button {
+        border: none;
+        background: none;
+        &.del {
+          color: #ff0000;
+        }
+      }
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}

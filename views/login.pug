@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="./styles/style.css")
+        title #{title}
+    body 
+        .login-page 
+            img.login-page__bg(src="assets/imgs/login-bg.jpg", alt="")
+
+            .form
+                form(action="/login", method="POST")
+                    img.form__logo(src="assets/imgs/logo-2d.png", alt="")
+                    input(type="text", name="username", placeholder="Username" autocomplete="off" required value="FaisalSyed")
+                    input(type="password", name="password", placeholder="Password" autocomplete="off" required value="5tr0n9P@55w0rd")
+                    button(type="submit") Login 

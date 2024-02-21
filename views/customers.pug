@@ -1,0 +1,125 @@
+extends ./layouts/adminLayout.pug
+include ./layouts/pagination.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+            a(href="/customers/add-customer")
+                button.btn.btn-primary.btn-icon
+                    span Add Customer
+                    ion-icon(name="add")
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+            .flex-fill
+                h1.my-0 Customers
+                if query && lp
+                    span.my-0 w/ Search term #{query.toUpperCase()} & Loyality Points #{lp}
+                else if query
+                    span.my-0 w/ Search term #{query.toUpperCase()}
+                else if lp
+                    span.my-0 w/ Loyality Points #{lp}
+                else
+                    span.my-0 ALL
+        
+        if query || lp
+            a(href="/customers").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        h5.mt-4 Filter by Loyality Points
+        div
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=0) 0
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=1) 1
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=2) 2
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=3) 3
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=4) 4
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=5) 5
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=6) 6
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=7) 7
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=8) 8
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=9) 9
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp=10) 10
+            button.m-1.btn.btn-light.text-dark.border#loyalityFilter(data-lp="") All
+
+        form.search-form(action="/customers", method="GET" data-action="/customers")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q" placeholder="Search for a Customer" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if customers.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No customers found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/customers")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Customers
+                            ion-icon(name="arrow-forward")
+
+        each customer in customers
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            span.card-subtitle.text-muted CUSTOMER
+                            a(href=`/customers/${customer._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 
+                                    | #{customer.name.toUpperCase()}
+                                    span.text-primary  • 
+                                    if customer.loyaltyInfo.loyaltyPoints <= 3
+                                        span.text-danger #{customer.loyaltyInfo.loyaltyPoints}LP
+                                    else if customer.loyaltyInfo.loyaltyPoints <= 7
+                                        span.text-warning.text-shadow-sm #{customer.loyaltyInfo.loyaltyPoints}LP
+                                    else
+                                        span.text-success #{customer.loyaltyInfo.loyaltyPoints}LP
+                            span.card-subtitle.text-muted ADDRESS
+                            if customer.address.split("").length > 30
+                                span.card-title.d-block #{customer.address.split("").slice(0, 30).join("")}...
+                            else
+                                span.card-title.d-block #{customer.address}
+                        .flex-fill.text-end
+                            span.card-subtitle.text-muted PHONE
+                            a(href=`tel:${customer.phone}`).basic-anchor
+                                span.card-title.fw-600.fs-6.d-block #{customer.phone}
+                            span.card-subtitle.text-muted EMAIL
+                            if customer.email
+                                a(href=`mailto:${customer.email}`).basic-anchor
+                                    span.card-title.fw-600.fs-6.d-block #{customer.email}
+                            else
+                                span.card-title.fw-600.fs-6.d-block N/A
+                    
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+                        .flex-fill
+                            button.btn.btn-danger.btn-icon.mb-3.w-100.confirm-first(data-url=`/customers/delete-customer/${customer._id}`)
+                                span Delete
+                                ion-icon(name="trash")
+                        .flex-fill
+                            a(href=`/customers/edit-customer/${customer._id}`) 
+                                    button.btn.btn-primary.btn-icon.mb-3.w-100
+                                        span Edit
+                                        ion-icon(name="create")
+
+        +pagination("/customers", customers, page, totalCustomers, {q: query, lp})
+
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            const loyalityFilter = document.querySelectorAll('#loyalityFilter');
+            loyalityFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('lp', filter.getAttribute('data-lp'));
+                    window.location.href = `/customers?${searchParams.toString()}`;
+                });
+            });
+        });

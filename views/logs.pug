@@ -1,0 +1,157 @@
+extends ./layouts/adminLayout.pug
+include ./layouts/pagination.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+            .flex-fill
+                h1.my-0 Logs
+                if query || coll || opr || date || uid
+                    if query 
+                        span.my-0 w/ search term 
+                            i 
+                                b #{query.toUpperCase()}
+                    if coll
+                        span.my-0 
+                            i in 
+                                b #{coll.toUpperCase()}
+                    if opr
+                        span.my-0 
+                            | which are 
+                            i 
+                                b #{opr.toUpperCase()}
+                    if uid
+                        span.my-0 
+                            if logs.length > 0
+                                | by 
+                                i 
+                                    b #{logs[0].uid.name.toUpperCase()}
+                    if date 
+                        span.my-0 
+                            | on 
+                            i 
+                                b   #{new Date(date).toDateString()}
+                else
+                    span.my-0 ALL
+        
+        if query || coll || opr || date || uid
+            a(href="/logs").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        h5.mt-4 Filter by Collection
+        div
+            button.m-1.btn.border#collFilter(data-coll="inventory" class=(coll == "inventory" ? "btn-primary text-light" : "btn-light text-dark")) Inventory
+            button.m-1.btn.border#collFilter(data-coll="suppliers" class=(coll == "suppliers" ? "btn-primary text-light" : "btn-light text-dark")) Suppliers
+            button.m-1.btn.border#collFilter(data-coll="customers" class=(coll == "customers" ? "btn-primary text-light" : "btn-light text-dark")) Customers
+            button.m-1.btn.border#collFilter(data-coll="sales" class=(coll == "sales" ? "btn-primary text-light" : "btn-light text-dark")) Sales
+            button.m-1.btn.border#collFilter(data-coll="categories" class=(coll == "categories" ? "btn-primary text-light" : "btn-light text-dark")) Categories
+            button.m-1.btn.border#collFilter(data-coll="users" class=(coll == "users" ? "btn-primary text-light" : "btn-light text-dark")) Users
+            button.m-1.btn.border#collFilter(data-coll="" class=(coll == "" ? "btn-primary text-light" : "btn-light text-dark")) All
+
+        h5.mt-4 Filter by Operation
+        div
+            button.m-1.btn.border#oprFilter(data-opr="create" class=(opr == "create" ? "btn-primary text-light" : "btn-light text-dark")) Create
+            button.m-1.btn.border#oprFilter(data-opr="update" class=(opr == "update" ? "btn-primary text-light" : "btn-light text-dark")) Update
+            button.m-1.btn.border#oprFilter(data-opr="delete" class=(opr == "delete" ? "btn-primary text-light" : "btn-light text-dark")) Delete
+            button.m-1.btn.border#oprFilter(data-opr="" class=(opr == "" ? "btn-primary text-light" : "btn-light text-dark")) All
+            
+        h5.mt-4 Filter by Date
+        form#get-date-form(action="/logs", method="GET" data-action="/logs")
+            .d-flex.justify-content-between.gap-3.align-items-center
+                input.form-control(type="date", name="date" autocomplete="off" value=`${date}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+        form.search-form(action="/logs", method="GET" data-action="/logs")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q" placeholder="Search for a Log" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if logs.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No logs found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/logs")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Logs
+                            ion-icon(name="arrow-forward")
+
+        each log in logs
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            a(href=`/logs?uid=${log.uid._id}`).basic-anchor
+                                span
+                                    | #{log.uid.name.toUpperCase()} 
+                            if log.opr == 'delete'
+                                | DELETED IN
+                            else if log.opr == 'create'
+                                | CREATED IN
+                            else if log.opr == 'update'
+                                | UPDATED IN
+                            a(href=`/logs/${log._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 #{log.coll.toUpperCase()}
+                            
+                            span.card-subtitle.text-muted 
+                                | ON
+                                | #{new Date(log.timestamp).toDateString().toUpperCase()}, #{new Date(log.timestamp).toLocaleTimeString().toUpperCase()}
+        
+        +pagination("/logs", logs, page, totalLogs, {q: query, operation: opr, collection: coll, date, uid})
+
+    script.
+         document.addEventListener('DOMContentLoaded', function() {            
+            const oprFilter = document.querySelectorAll('#oprFilter');
+            oprFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('operation', filter.getAttribute('data-opr'));
+                    window.location.href = `/logs?${searchParams.toString()}`;
+                });
+            });
+
+            const collFilter = document.querySelectorAll('#collFilter');
+            collFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('collection', filter.getAttribute('data-coll'));
+                    window.location.href = `/logs?${searchParams.toString()}`;
+                });
+            });
+
+            const dateForm = document.querySelector('#get-date-form');
+            const date = dateForm.querySelector('input[name="date"]');
+            dateForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting normally
+                
+                // Get the current URL and its search parameters
+                const url = new URL(window.location);
+                const searchParams = new URLSearchParams(url.search);
+                
+                // Get the user's search query
+                const dt = date.value;
+                
+                // Update the "from" & "to" parameter with the new search query
+                searchParams.set('date', dt);
+                
+                // Redirect the user to the updated URL
+                window.location.href = `${dateForm.getAttribute("data-action")}?${searchParams.toString()}`;
+            });
+            
+         })

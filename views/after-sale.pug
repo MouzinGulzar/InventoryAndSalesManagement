@@ -1,0 +1,254 @@
+extends ./layouts/adminLayout.pug
+
+block styles 
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js") 
+
+block content 
+        .container.my-5
+            .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                a(href="/sales")
+                    button.btn.btn-primary.btn-icon
+                        ion-icon(name="arrow-back")
+                        span Back to Sales
+
+            .d-flex.justify-content-between.gap-2.align-items-center.flex-wrap.mt-3
+                button.btn.btn-primary.btn-icon#download-invoice
+                    span Download
+                    ion-icon(name="download-outline")
+                button.btn.btn-primary.btn-icon#print-invoice
+                    span Print
+                    ion-icon(name="print-outline")
+                if sale.customer.email
+                    button.btn.btn-primary.btn-icon#email-invoice
+                        span Email
+                        ion-icon(name="mail-outline")
+
+            .invoice-container
+                .invoice
+                    .invoice__header
+                        .invoice__header--company
+                            img.invoice__header--company-logo(src='/assets/imgs/logo-square.png', alt='Logo', width='100', height='100')
+                            .invoice__header--company-info
+                                h2 Device Dynasty
+                                p Bandipora, J&K 193502
+                                a(href="tel:+916006569856") 6006569856 | 
+                                a(href="mailto:example@gmail.com") example@gmail.com
+                                //- p.text-body-tertiary.fw-bold
+                                //-     span GST: 
+                                    //- span 22AAAAA0000A1Z5
+                        .invoice__header--invoice-details
+                            h2 Invoice
+                            p.invoice__header--invoice-details--id ##{sale._id}
+                            p Date: #{invoiceDate}
+                    .invoice__main
+                        .invoice__body 
+                            .invoice__body--customer
+                                h3 To:
+                                p.invoice__body--customer-name #{sale.customer.name}
+                                p.invoice__body--customer-address #{sale.customer.address}
+                                a(href=`mailto:${sale.customer.email}`).invoice__body--customer-email #{sale.customer.email}
+                                a(href=`tel:${sale.customer.phone}`).invoice__body--customer-phone #{sale.customer.phone}
+                            .invoice__body--items
+                                table
+                                    thead
+                                        tr
+                                            th S.No.
+                                            th Product
+                                            th Qty.
+                                            th Unit Price
+                                            th Discount
+                                            th Total
+                                    tbody
+                                        each product, index in sale.products
+                                            tr
+                                                td #{index + 1}
+                                                if product.product
+                                                    td #{product.product.product.toUpperCase()}
+                                                else
+                                                    td N/A
+
+                                                td #{product.quantity}
+                                                td ₹ #{(product.unitSellPrice).toFixed(2)}
+
+                                                if product.product
+                                                    if product.product.unitSellPrice > product.unitSellPrice
+                                                        td ₹ #{(product.product.unitSellPrice - product.unitSellPrice) * product.quantity}
+                                                    else
+                                                        td 0
+                                                else
+                                                    td N/A
+                                                
+                                                td ₹ #{product.unitSellPrice * product.quantity}
+
+                            .invoice__body--details
+                                div
+                                    .invoice__body--details--payment-method
+                                        p Paymet Method
+                                        p #{sale.paymentMethod.toUpperCase()}
+                                    .invoice__body--details--terms
+                                        p Terms & Conditions
+                                        p 1. All products are non-refundable.
+                                        p 2. Warranty is only applicable for manufacturing defects.
+                                        p 3. Warranty is not applicable for physical damage.
+                                .invoice__body--details--total
+                                        p 
+                                            span Sub Total
+                                            span ₹#{sale.totalSale - (sale.totalSale * 0.18)}
+                                        p
+                                            span GST (18%)
+                                            span ₹#{(sale.totalSale * 0.18).toFixed(2)}
+                                        p 
+                                            span Discount
+                                            span ₹#{sale.discount}
+                                        div
+                                            span Total 
+                                            span ₹#{sale.totalSale - sale.discount}
+                        .invoice__footer.mt-5
+                            p.invoice__footer--thanks Thank you for your business! ❤️
+    
+            .d-grid.gap-2.mt-3
+                button.btn.btn-danger.btn-icon.confirm-first(data-url=`/sales/delete-sale/${sale._id}`)
+                    span Delete
+                    ion-icon(name="trash")
+            //- INVOICE THAT IS BEING SENT AS VIA EMAIL
+            if sale.customer.email
+                .email-mail(style="display: none;")
+                    div(style='max-width: 600px; margin: auto; font-family: Arial, sans-serif; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;')
+                    div(style='display: flex; align-items: center; justify-content: center; gap: 10px; background-color: #f8f8f8; padding: 20px; border-bottom: 1px solid #ddd;')
+                        img(src='https://devicedynasty.in/assets/imgs/logo-square.png', alt='Logo', style='width: 100px; height: 100px; border-radius: 50%;')
+                        div()
+                            strong Device Dynasty
+                            br
+                            | Bandipora, J&amp;K 193502
+                            br
+                            a(href='tel:+916006569856', style='color: #333; text-decoration: none;') 6006569856
+                            |  | 
+                            a(href='mailto:example@gmail.com', style='color: #333; text-decoration: none;') example@gmail.com
+                    div(style='padding: 20px;')
+                        h1(style='text-align: center; font-size: 30px; margin-top: 10px;') Invoice
+                        div(style='margin-bottom: 20px;')
+                            strong Invoice ID:
+                            |  ##{sale._id}
+                            br
+                            strong Date:
+                            |  #{invoiceDate}
+                        div(style='margin-bottom: 20px;')
+                            strong To:
+                            br
+                            | #{sale.customer.name}
+                            br
+                            | #{sale.customer.address}
+                            br
+                            a(href='mailto:#{sale.customer.email}', style='color: #333; text-decoration: none;') #{sale.customer.email}
+                            br
+                            a(href='tel:#{sale.customer.phone}', style='color: #333; text-decoration: none;') #{sale.customer.phone}
+                        table(style='width: 100%; border-collapse: collapse;')
+                            thead
+                                tr(style='background-color: #000; color: #fff;')
+                                    th(style='padding: 10px; border: 1px solid #ddd;') S.No.
+                                    th(style='padding: 10px; border: 1px solid #ddd;') Product
+                                    th(style='padding: 10px; border: 1px solid #ddd;') Qty.
+                                    th(style='padding: 10px; border: 1px solid #ddd;') Unit Price
+                                    th(style='padding: 10px; border: 1px solid #ddd;') Discount
+                                    th(style='padding: 10px; border: 1px solid #ddd;') Total
+                            tbody
+                                each product, index in sale.products
+                                    tr
+                                        td(style='padding: 10px; border: 1px solid #ddd;') #{index + 1}
+                                        if product.product
+                                            td(style='padding: 10px; border: 1px solid #ddd;') #{product.product.product.toUpperCase()}
+                                        else
+                                            td N/A
+
+                                        td(style='padding: 10px; border: 1px solid #ddd;') #{product.quantity}
+
+                                        td(style='padding: 10px; border: 1px solid #ddd;') ₹ #{(product.unitSellPrice).toFixed(2)}
+                                        if product.product
+                                            if product.product.unitSellPrice > product.unitSellPrice
+                                                td(style='padding: 10px; border: 1px solid #ddd;') ₹ #{(product.product.unitSellPrice - product.unitSellPrice) * product.quantity}
+                                            else
+                                                td(style='padding: 10px; border: 1px solid #ddd;') 0
+                                        else
+                                            td(style='padding: 10px; border: 1px solid #ddd;') N/A
+
+                                        td(style='padding: 10px; border: 1px solid #ddd;') ₹ #{product.unitSellPrice * product.quantity}
+
+                        div(style='text-align: right; font-size: 20px; margin-bottom: 20px; margin-top: 20px')
+                            strong Sub Total:
+                                |  &#x20B9;#{sale.totalSale - (sale.totalSale * 0.18)}
+                            br
+                            strong GST (18%):
+                                |  &#x20B9;#{(sale.totalSale * 0.18).toFixed(2)}
+                            br
+                            strong Discount:
+                                |  &#x20B9;#{sale.discount}
+                            br
+                            strong Total:
+                                |  &#x20B9;#{sale.totalSale - sale.discount}
+
+                        div
+                            p(style="font-weight: 500; margin: 0; padding: 0;") Payment Method
+                            p(style="font-size: 20px; padding: 0;") #{sale.paymentMethod.toUpperCase()}
+
+                            p(style="font-weight: 500; margin: 0; padding: 0;") Terms & Conditions
+                            ol 
+                                li All products are non-refundable.
+                                li Warranty is only applicable for manufacturing defects.
+                                li Warranty is not applicable for physical damage.
+
+                        div(style='background-color: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #ddd;')
+                            p(style='margin: 0;') Thank you for your business! ❤️
+            
+        script.
+            document.getElementById('download-invoice').addEventListener('click', function () {
+                const element = document.querySelector('.invoice');
+                const name = document.querySelector(".invoice__body--customer-name").textContent;
+                const invoiceNumber = document.querySelector(".invoice__header--invoice-details--id").textContent;
+                const opt = {
+                    filename:     `Invoice${new Date().getDate() < 10 ? "0" + new Date().getDate() : new Date().getDate()}${new Date().getMonth() < 10 ? "0" + new Date().getMonth() : new Date().getMonth()}${new Date().getFullYear()}_${name.replaceAll(" ", "")}${invoiceNumber}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                // New Promise-based usage:
+                html2pdf().set(opt).from(element).save();
+            });
+
+            document.getElementById('print-invoice').addEventListener('click', function () {
+                window.print();
+            });
+
+            document.getElementById('email-invoice').addEventListener('click', function () {
+                const emailBtn = document.querySelector('#email-invoice span');
+                const clientEmail = document.querySelector('.invoice__body--customer-email').textContent;
+                const emailSubject = 'Invoice to';
+                const emailBody = document.querySelector('.email-mail').innerHTML;
+
+                emailBtn.textContent = "Sending...";
+
+                fetch('/api/send-invoice-mail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: clientEmail,
+                        subject: emailSubject,
+                        html: emailBody,
+                    }),
+                })
+                .then(response => response)
+                .then(result => {
+                    if(result.ok) toastr.success("Email sent successfully");
+                    else toastr.error("Something went wrong! Meanwhile, try downloading or printing the invoice")
+                    emailBtn.textContent = "Email";
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+
+
+
+                        

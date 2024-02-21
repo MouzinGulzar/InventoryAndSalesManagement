@@ -1,0 +1,70 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+            a(href="/users/add-user")
+                button.btn.btn-primary.btn-icon
+                    span Add User
+                    ion-icon(name="add")
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+            .flex-fill
+                h1.my-0 Users
+                if query
+                    span.my-0
+                        | w/ Search term 
+                        i
+                            b #{query}
+                else
+                    span.my-0 ALL
+        
+        if query
+            a(href="/users").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        form.search-form(action="/users", method="GET" data-action="/users")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q" placeholder="Search for a User" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if users.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No users found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/users")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Users
+                            ion-icon(name="arrow-forward")
+
+        each user in users
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            span @#{user.username.toUpperCase()}
+                            a(href=`/logs?uid=${user._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 #{user.name.toUpperCase()}
+
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+                        .flex-fill
+                            button.btn.btn-danger.btn-icon.mb-3.w-100.confirm-first(data-url=`/users/delete-user/${user._id}`)
+                                span Delete
+                                ion-icon(name="trash")
+                        .flex-fill
+                            a(href=`/users/edit-user/${user._id}`) 
+                                    button.btn.btn-primary.btn-icon.mb-3.w-100
+                                        span Edit
+                                        ion-icon(name="create")

@@ -1,0 +1,272 @@
+.invoice-container {
+  overflow: auto;
+  padding: 1rem;
+  height: auto;
+}
+
+.invoice {
+  border-radius: 10px;
+  padding: 5rem 3rem;
+  margin: 1rem auto;
+  width: 50rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1rem;
+
+    &--company {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      &-logo {
+        width: 100px;
+        height: 100px;
+        margin-right: 20px;
+        border-radius: 100px;
+      }
+
+      &-info {
+        h2 {
+          margin: 0;
+          font-size: 1.3rem;
+          font-weight: 600;
+        }
+        p {
+          margin: 0;
+          color: #777;
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+
+        a {
+          text-decoration: none;
+          color: #777;
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    &--invoice-details {
+      h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      p {
+        margin: 0;
+        color: #777;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    &--customer {
+      margin-top: 2rem;
+
+      h3 {
+        margin: 0;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      &-name {
+        margin: 0;
+        font-weight: 600;
+      }
+      &-address {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #777;
+      }
+      a {
+        text-decoration: none;
+        font-size: 0.85rem;
+        color: #777;
+        display: block;
+      }
+    }
+
+    &--items {
+      margin: 2rem 0;
+      width: 100%;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        tr {
+          border-bottom: 2px solid #bbb;
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+
+        th,
+        td {
+          padding: 0.75rem 1rem;
+          text-align: center;
+
+          &:nth-child(2) {
+            text-align: left;
+          }
+        }
+
+        th {
+          background-color: #000;
+          font-weight: 600;
+          color: #fff;
+        }
+
+        td {
+          font-weight: 600;
+
+          &:nth-child(2n + 1) {
+            background-color: #ddd;
+          }
+
+          &:nth-child(2n) {
+            background-color: #f7f7f7;
+          }
+        }
+      }
+    }
+
+    &--details {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+
+      &--payment-method {
+        p {
+          &:first-child {
+            font-weight: 600;
+            margin: 0;
+          }
+          &:last-child {
+            font-size: 1.5rem;
+          }
+        }
+      }
+
+      &--terms {
+        p {
+          margin: 0;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #777;
+
+          &:first-child {
+            color: #000;
+          }
+        }
+      }
+
+      &--total {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+
+        p {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 600;
+          border-bottom: 2px solid #bbb;
+
+          span {
+            display: block;
+            padding: 0.75rem;
+            width: 9rem;
+            &:first-child {
+              background-color: #eee;
+            }
+
+            &:last-child {
+              background-color: #ddd;
+              text-align: right;
+            }
+          }
+
+          &:last-child {
+            background-color: #000 !important;
+            //   color: #fff !important;
+          }
+        }
+
+        div {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 600;
+
+          span {
+            display: block;
+            padding: 0.75rem 1rem;
+            font-size: 1.25rem;
+            width: 9rem;
+
+            &:first-child {
+              background-color: #000;
+              color: #fff;
+            }
+
+            &:last-child {
+              background-color: #000;
+              text-align: right;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &__footer {
+    margin-top: 2rem;
+    margin-bottom: auto;
+
+    &--thanks {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #000;
+    }
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice,
+  .invoice * {
+    visibility: visible;
+  }
+  .invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}

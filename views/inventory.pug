@@ -1,0 +1,132 @@
+extends ./layouts/adminLayout.pug
+include ./layouts/pagination.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+            a(href="/inventory/add-item")
+                button.btn.btn-primary.btn-icon
+                    span Add Item
+                    ion-icon(name="add")
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+            .flex-fill
+                h1.my-0 Inventory
+                span.my-0
+                    if query || category || supplier || status 
+                        if query 
+                            | SEARCH TERM 
+                            i 
+                                b #{query.toUpperCase()} 
+                        if category 
+                            | IN
+                            i 
+                                b #{category.toUpperCase()} 
+                        if supplier 
+                            | FROM
+                            i 
+                                b #{supplier.toUpperCase()} 
+                        if status 
+                            | WHICH ARE
+                            i 
+                                b #{status.toUpperCase()} 
+                        
+                        span.my-0.d-block
+                            | SHOWING
+                            i 
+                                b #{inventory.length} 
+                            | #{inventory.length > 1 ? "RESULTS" : "RESULT"}
+                    else
+                        span.my-0 ALL
+        if query || category || supplier || status
+            a(href="/inventory").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        h5.mt-4 Filter Categories
+        div
+            each category in categories
+                button.m-1.btn.btn-light.text-dark.border#categoryFilter(data-id=category._id) #{category.name.split(" ").map(e => e[0].toUpperCase() + e.slice(1)).join(" ")}      
+            button.m-1.btn.btn-light.text-dark.border#categoryFilter(data-id="") All
+
+        form.search-form(action="/inventory", method="GET", data-action="/inventory")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q", placeholder="Search for a product" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if inventory.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No products found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/inventory")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Products
+                            ion-icon(name="arrow-forward")
+
+        each product in inventory
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            span.card-subtitle.text-muted PRODUCT
+                            a(href=`/inventory/${product._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 #{product.product.toUpperCase()}
+                            span.card-subtitle.text-muted.mt-3.d-block IS
+                            if product.status == "active"
+                                h6.card-subtitle.text-success #{product.status.split("")[0].toUpperCase() + product.status.slice(1)}
+                            else if product.status == "discontinued"
+                                h6.card-subtitle.text-muted #{product.status.split("")[0].toUpperCase() + product.status.slice(1)}
+                            if product.status == "out of stock"
+                                h6.card-subtitle.text-danger #{product.status.split(" ").map(e => e[0].toUpperCase() + e.slice(1)).join(" ")}
+                        .flex-fill.text-end
+                            span.card-subtitle.text-muted STOCK LEFT
+                            if product.quantity < 10
+                                h5.card-title.fw-600.fs-4.text-danger #{product.quantity}
+                            else if product.quantity < 20
+                                h5.card-title.fw-600.fs-4.text-warning #{product.quantity}
+                            else
+                                h5.card-title.fw-600.fs-4.text-success #{product.quantity}
+                            span.card-subtitle.text-muted PRICE
+                            h5.card-title.fw-600.fs-4.text-success ₹ #{product.unitSellPrice.toFixed(2)}
+
+                    if product.description
+                        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3.border-top.pt-3
+                            .flex-fill
+                                p.card-subtitle.text-muted.mb-1 #{product.description}
+                    
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+                        .flex-fill
+                            button.btn.btn-danger.btn-icon.mb-3.w-100.confirm-first(data-url=`/inventory/delete-item/${product._id}`)
+                                span Delete
+                                ion-icon(name="trash")
+                        .flex-fill
+                            a(href=`/inventory/edit-item/${product._id}`) 
+                                    button.btn.btn-primary.btn-icon.mb-3.w-100
+                                        span Edit
+                                        ion-icon(name="create")
+
+        +pagination("/inventory", inventory, page, totalItems, {q: query, category, supplier, status})
+    
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryFilter = document.querySelectorAll('#categoryFilter');
+            categoryFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('category', filter.getAttribute('data-id'));
+                    window.location.href = `/inventory?${searchParams.toString()}`;
+                });
+            });
+        });

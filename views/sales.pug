@@ -1,0 +1,166 @@
+extends ./layouts/adminLayout.pug
+include ./layouts/pagination.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+            a(href="/sales/add-sale")
+                button.btn.btn-primary.btn-icon
+                    span Add Sale
+                    ion-icon(name="add")
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+            .flex-fill
+                h1.my-0 Sales
+                if query && from && to
+                    span.my-0 From #{new Date(from).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')} to #{new Date(to).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')} w/ Search term #{query.toUpperCase()}
+                else if query && from
+                    span.my-0 From #{new Date(from).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')} w/ Search term #{query.toUpperCase()}
+                else if query && to
+                    span.my-0 To #{new Date(to).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')} w/ Search term #{query.toUpperCase()} 
+                else if from && to
+                    span.my-0 From #{new Date(from).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')} to #{new Date(to).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')}
+                else if query
+                    span.my-0 w/ Search term #{query.toUpperCase()}
+                else if from
+                    span.my-0 From #{new Date(from).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')}
+                else if to
+                    span.my-0 To #{new Date(to).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ')}
+                else
+                    span.my-0 ALL
+        
+        if query || paymethod || from || to || customer || status
+            a(href="/sales").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        h1 #{paymentMethod}
+        h5.mt-4 Filter by Payment Method
+        div
+            button.m-1.btn.border#paymethodFilter(data-paymethod="cash" class=(paymethod == "cash" ? "btn-primary text-light" : "btn-light text-dark")) Cash
+            button.m-1.btn.border#paymethodFilter(data-paymethod="card" class=(paymethod == "card" ? "btn-primary text-light" : "btn-light text-dark")) Card 
+            button.m-1.btn.border#paymethodFilter(data-paymethod="cheque" class=(paymethod == "cheque" ? "btn-primary text-light" : "btn-light text-dark")) Cheque
+            button.m-1.btn.border#paymethodFilter(data-paymethod="online" class=(paymethod == "online" ? "btn-primary text-light" : "btn-light text-dark")) Online
+            button.m-1.btn.border#paymethodFilter(data-paymethod="" class=(paymethod == "" ? "btn-primary text-light" : "btn-light text-dark")) All
+
+        h5.mt-4 Filter by Status
+        div
+            button.m-1.btn.border#statusFilter(data-status="completed" class=(status == "completed" ? "btn-primary text-light" : "btn-light text-dark")) Completed
+            button.m-1.btn.border#statusFilter(data-status="pending" class=(status == "pending" ? "btn-primary text-light" : "btn-light text-dark")) Pending
+            button.m-1.btn.border#statusFilter(data-status="cancelled" class=(status == "cancelled" ? "btn-primary text-light" : "btn-light text-dark")) Cancelled 
+            button.m-1.btn.border#statusFilter(data-status="" class=(status == "" ? "btn-primary text-light" : "btn-light text-dark")) All
+
+        h5.mt-4 Filter by Date
+        form#get-date-form(action="/sales", method="GET" data-action="/sales")
+            .d-flex.justify-content-between.gap-3.align-items-center
+                .flex-fill
+                    label(for="from") From
+                    input.form-control(type="date", name="from" autocomplete="off" value=`${from}`)
+                .flex-fill
+                    label(for="from") To
+                    input.form-control(type="date", name="to" autocomplete="off" value=`${to}`)
+                
+            .d-grid.mt-2
+                button.btn.btn-primary.btn-icon(type="submit")
+                    span Get Sales
+                    ion-icon(name="calendar")
+        
+        form.search-form(action="/sales", method="GET" data-action="/sales")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q" placeholder="Search for a Sale" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if sales.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No sales found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/sales")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Sales
+                            ion-icon(name="arrow-forward")
+
+        each sale in sales
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            span.card-subtitle.text-muted SALE TO
+                            a(href=`/sales/after-sale/${sale._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 
+                                    | #{sale.customerDetails.name.toUpperCase()}
+                                    span.text-primary  • 
+                                    span.text-muted #{sale.status.toUpperCase()}
+                            span.card-subtitle.text-muted PAID VIA
+                            span.card-title.d-block #{sale.paymentMethod.toUpperCase()}
+                            span.card-subtitle.text-muted ON
+                            span.card-title.d-block #{sale.saleDate.toDateString()}
+                        .flex-fill.text-end
+                            span.card-subtitle.text-muted TOTAL ITEM(S)
+                            span.card-title.d-block.fs-2 #{sale.products.length}
+                            span.card-subtitle.text-muted WORTH
+                            span.card-title.d-block.fs-2 ₹ #{sale.totalSale}
+                    
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+                        .flex-fill
+                            button.btn.btn-danger.btn-icon.mb-3.w-100.confirm-first(data-url=`/sales/delete-sale/${sale._id}`)
+                                span Delete
+                                ion-icon(name="trash")
+
+        +pagination("/sales", sales, page, totalSales, {q: query, paymethod, from, to, status, customer})
+
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            const from = document.querySelector('input[name="from"]');
+            const to = document.querySelector('input[name="to"]');
+            const dateForm = document.querySelector('#get-date-form');
+           
+            dateForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting normally
+                
+                // Get the current URL and its search parameters
+                const url = new URL(window.location);
+                const searchParams = new URLSearchParams(url.search);
+                
+                // Get the user's search query
+                const fromDate = from.value;
+                const toDate = to.value;
+                
+                // Update the "from" & "to" parameter with the new search query
+                searchParams.set('from', fromDate);
+                searchParams.set('to', toDate);
+                
+                // Redirect the user to the updated URL
+                window.location.href = `${dateForm.getAttribute("data-action")}?${searchParams.toString()}`;
+            });
+            
+            const paymethodFilter = document.querySelectorAll('#paymethodFilter');
+            paymethodFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('paymethod', filter.getAttribute('data-paymethod'));
+                    window.location.href = `/sales?${searchParams.toString()}`;
+                });
+            });
+
+            const statusFilter = document.querySelectorAll('#statusFilter');
+            statusFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('status', filter.getAttribute('data-status'));
+                    window.location.href = `/sales?${searchParams.toString()}`;
+                });
+            });
+        });

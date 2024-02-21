@@ -1,0 +1,7 @@
+nav.navbar.admin-nav.bg-body-tertiary
+    .container-fluid
+    a.navbar-brand(href='/')
+        img.d-inline-block.align-text-top(src='/assets/imgs/logo-square.png', alt='Logo', width='30', height='24')
+        | #{user.name}
+    form.d-flex(action='/logout', method='POST')
+        button.btn.btn-danger(type='submit') Logout

@@ -1,0 +1,87 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.my-4
+            a(href="/suppliers")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Suppliers
+            a(href=`/suppliers/edit-supplier/${supplier._id}`)
+                button.btn.btn-primary.btn-icon
+                    span.ms-2 Edit Supplier
+                    ion-icon(name="create")
+        
+        .d-flex.gap-1.align-items-center.flex-wrap
+            h1.my-0 #{supplier.name.toUpperCase()}
+            a(href=`/inventory?supplier=${supplier._id}`).basic-anchor
+                    ion-icon.fs-1(name="arrow-forward-circle")
+        span.fs-6.text-muted #{supplier.address}
+
+        div.d-flex.align-items-center.gap-1.flex-wrap
+            a(href="mailto:#{supplier.email}").basic-anchor
+                span.fs-6 #{supplier.email}
+            if supplier.email
+                span.fs-6.text-muted  |
+            a(href="tel:#{supplier.contact}").basic-anchor
+                span.fs-6 #{supplier.contact}
+
+        .d-flex.justify-content-between.gap-2.flex-wrap.mt-2.mb-5.border-bottom.pb-3
+            .mb-0.flex-fill
+                span.d-block.fs-6.fst-italic #{supplier.note}
+
+        .d-flex.justify-content-between.gap-2.flex-wrap
+            .mb-3.flex-fill
+                label.form-label.my-0(for='exampleText3') TOTAL PRODUCTS
+                span.d-block.fs-4 #{products.length}
+            .mb-3.flex-fill.text-center
+                label.form-label.my-0(for='exampleText3') AVAILABLE PRODUCTS
+                span.d-block.fs-4 #{availProducts.length}
+            .mb-3.flex-fill.text-end
+                label.form-label.my-0(for='exampleText2') OUT OF STOCK
+                .d-flex.align-items-center.justify-content-end
+                    span.fs-4 #{outOfStockProducts.length}
+                    if outOfStockProducts.length > 0
+                        form(action="/inventory", method="get")
+                            input(type="hidden", name="supplier", value=`${supplier._id}`)
+                            input(type="hidden", name="status", value="out of stock")
+                            button.btn.btn-link.m-0
+                                ion-icon(name="bag").text-danger.fs-2
+
+
+        .d-flex.justify-content-between.gap-2.flex-wrap
+            .mb-3.flex-fill
+                label.form-label.my-0(for='exampleText2') TOTAL SALES
+                span.d-block.fs-4 #{sales.length}
+            .mb-3.flex-fill.text-center
+                label.form-label.my-0(for='exampleText3') TOTAL PURCHASES
+                span.d-block.fs-4 #{supplier.totalPurchases}
+            .mb-3.flex-fill.text-end
+                label.form-label.my-0(for='exampleText3') TOTAL ITEMS
+                span.d-block.fs-4 #{supplier.totalItems}
+                
+        .d-flex.justify-content-between.gap-2.flex-wrap.mt-2
+            .mb-3.flex-fill
+                label.form-label.my-0(for='exampleText3') TSR
+                .d-flex
+                    -for (let i = 0; i < supplier.tsr; i++)
+                        if supplier.tsr <= 2
+                            span.fs-4.text-danger
+                                ion-icon(name="star")
+                        else if supplier.tsr < 4
+                            span.fs-4.text-warning
+                                ion-icon(name="star")
+                        else
+                            span.fs-4.text-success
+                                ion-icon(name="star")
+            .mb-3.flex-fill.text-center
+                label.form-label.my-0(for='exampleText3') MONEY IN INVENTORY
+                span.fs-4.d-block ₹ #{availProducts.reduce((acc, e) => acc + e.unitCostPrice * e.quantity, 0).toFixed(2)}
+            .mb-3.flex-fill.text-end
+                label.form-label.my-0(for='exampleText3') TOTAL SALES
+                span.fs-4.d-block ₹ #{sales.reduce((acc, e) => acc + e.totalSale, 0).toFixed(2)}
+
+        .d-grid.gap-2.mt-3
+            button.btn.btn-danger.btn-icon.confirm-first(data-url=`/suppliers/delete-supplier/${supplier._id}`)
+                span Delete
+                ion-icon(name="trash")

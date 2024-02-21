@@ -1,0 +1,47 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-5.mb-4
+            a(href="/inventory")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Inventory
+                    
+        h2.mt-5.mb-4 Add to Inventory
+        form(action=`/inventory/add-item`, method='POST')
+            .d-flex.justify-content-between.gap-4
+                .mb-3.flex-fill
+                    label.form-label(for='exampleText2') Product
+                    input#exampleText2.form-control(type='text' name="product" autocomplete="off" required)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Quantity
+                    input#exampleText3.form-control(type='number' name="quantity" autocomplete="off" required)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Unit Cost Price
+                    input#exampleText3.form-control(type='number' step="any" name="unitCostPrice" required)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Unit Sell Price
+                    input#exampleText3.form-control(type='number' step="any" name="unitSellPrice" required)
+
+            .d-flex.justify-content-between.gap-4
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Category
+                    select#exampleText3.form-select(type='text' name="category" required)
+                        option(value="" disabled selected) Select
+                        each category in categories
+                            option(value=category._id) #{category.name.toUpperCase()}
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Supplier
+                    select#exampleText3.form-select(type='text' name="supplier" required)
+                        option(value="" disabled selected) Select
+                        each supplier in suppliers
+                            option(value=supplier._id) #{supplier.name.toUpperCase()}
+            .d-flex.justify-content-between.gap-4
+                .mb-4.flex-fill
+                    label.form-label(for='exampleText3') Product Description
+                    textarea#exampleText3.form-control(type='text' name="description" rows="3")
+                    .form-text#emailHelp Provide a product description. If none, leave blank.
+
+            .d-grid
+                button.btn.btn-primary(type='submit') Add

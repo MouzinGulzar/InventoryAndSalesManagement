@@ -1,0 +1,59 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.my-4
+            a(href="/logs")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Logs
+        
+        .d-flex.align-items-start.flex-wrap
+            .mb-3.flex-fill
+                span.d-block.card-subtitle.text-muted.fs-6.my-0 OPERATION
+                a(href=`/logs?operation=${log.opr}`).basic-anchor.my-0
+                    span.d-block.fs-3 #{log.opr.toUpperCase()}
+            .mb-3.flex-fill
+                span.d-block.card-subtitle.text-muted.fs-6.my-0 PERFORMED ON
+                if log.coll == "sales"
+                    a(href=`/sales/after-sale/${log.documentId}`).basic-anchor
+                        span.d-block.fs-3 #{log.coll.toUpperCase()}
+                else if log.coll == "admins"
+                    a(href=`/users`).basic-anchor
+                        span.d-block.fs-3 #{log.coll.toUpperCase()}
+                else if log.coll == "categories"
+                    a(href=`/categories`).basic-anchor
+                        span.d-block.fs-3 #{log.coll.toUpperCase()}
+                else
+                    a(href=`/${log.coll}/${log.documentId}`).basic-anchor
+                        span.d-block.fs-3 #{log.coll.toUpperCase()}
+            .mb-3.flex-fill
+                span.d-block.card-subtitle.text-muted.fs-6.my-0 BY
+                a(href=`/logs?uid=${log.uid._id}`).basic-anchor
+                    span.d-block.fs-3 #{log.uid.name.toUpperCase()}
+        span.d-block.card-subtitle.text-muted.fs-6.my-0 ON
+        span.d-block.fs-5.text-muted #{new Date(log.timestamp).toDateString()}, #{new Date(log.timestamp).toLocaleTimeString()}
+
+        h1.mt-5 Changes Made
+        table.table.table-hover
+            thead
+                tr
+                    th.fs-6.text-muted.text-left # 
+                    th.fs-6.text-muted.text-left Field
+                    th.fs-6.text-muted.text-left Value
+            tbody
+                -let i = 1;
+                each val, key in log.changes
+                    if key != "_id" && key != "__v" && key != "uid" && key != "opr" && key != "coll" && key != "documentId"
+                        tr
+                            td.fs-6.text-muted.text-left #{i++}
+                            td.fs-6.text-muted.text-left #{key}
+                            if key == "products"
+                                td.fs-6.text-muted.text-left
+                                    a(href=`/sales/after-sale/${log.documentId}`).basic-anchor
+                                        span.d-block.fs-6 View #{val.length}
+                            if key == "loyaltyInfo"
+                                td.fs-6.text-muted.text-left
+                                    span.d-block.fs-6 #{val.loyaltyPoints}LP
+                            else
+                                td.fs-6.text-muted.text-left #{val}

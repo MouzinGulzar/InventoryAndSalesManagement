@@ -1,0 +1,20 @@
+a {
+  text-decoration: none !important;
+
+  &.basic-anchor {
+    color: $primary-color !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    &:hover {
+      color: $secondary-color !important;
+    }
+  }
+
+  &.basic-anchor-sm {
+    
+  }
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}

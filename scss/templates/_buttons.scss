@@ -1,0 +1,11 @@
+.btn-icon {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}

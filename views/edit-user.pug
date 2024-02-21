@@ -1,0 +1,68 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-5.mb-4
+            a(href="/users")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Users
+                    
+        h2.mt-5.mb-4 Edit User
+        form(action=`/users/edit-user/${usr._id}`, method='POST')
+            .d-flex.justify-content-between.gap-4
+                .mb-3.flex-fill
+                    label.form-label(for='exampleText2') Display Name
+                    input#exampleText2.form-control(type='text' name="name" autocomplete="off" value=usr.name required)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3')
+                    input#exampleText3.form-control(type='text' name="username" autocomplete="off" value=usr.username required disabled)
+                    #emailHelp.form-text.mb-3 Username cannot be changed
+            .d-flex.justify-content-between.gap-4
+                .mb-3.flex-fill
+                    label.form-label(for='exampleText4') New Password
+                    input#exampleText4.form-control(type='password' name="password" autocomplete="off" required)
+                .mb-3.flex-fill
+                    label.form-label(for='exampleText5') Confirm Password
+                    input#exampleText5.form-control(type='password' name="confirmPassword" autocomplete="off" required)
+
+            .d-flex.align-items-center.align-self-start
+                input.mx-0(type="checkbox", name="showPassword", id="showPassword")
+                label.form-check-label(for="showPassword") &nbsp; Show Password
+
+            .d-grid.mt-3
+                button.btn.btn-primary(type='submit') Update
+
+    script.
+        document.addEventListener('DOMContentLoaded', () => {    
+
+            const showPassword = document.getElementById('showPassword');
+            const password = document.getElementsByName('password')[0];
+            const confirmPassword = document.getElementsByName('confirmPassword')[0];
+
+            showPassword.addEventListener('change', () => {
+                if (showPassword.checked) {
+                    password.type = 'text';
+                    confirmPassword.type = 'text';
+                } else {
+                    password.type = 'password';
+                    confirmPassword.type = 'password';
+                }
+            });
+            
+            const nameField = document.getElementsByName('name')[0];
+            const usernameField = document.getElementsByName('username')[0];
+            const passwordField = document.getElementsByName('password')[0];
+            const confirmPasswordField = document.getElementsByName('confirmPassword')[0];
+            
+            const urlParams = new URLSearchParams(window.location.href);
+            if (urlParams.get('name') === null || urlParams.get('username') === null || urlParams.get('password') === null || urlParams.get('confirmPassword') === null){
+                return;
+            } 
+
+            nameField.value = urlParams.get('name');
+            usernameField.value = urlParams.get('username');
+            passwordField.value = urlParams.get('password');
+            confirmPasswordField.value = urlParams.get('confirmPassword');
+
+        });

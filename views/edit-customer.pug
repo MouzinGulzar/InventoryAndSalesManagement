@@ -1,0 +1,49 @@
+extends ./layouts/adminLayout.pug
+
+block content 
+    .container
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-5.mb-4
+            a(href=`/customers/${customer._id}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span.ms-2 Back to Customer
+
+        h2.mb-3 Edit Customer
+        form(action=`/customers/edit-customer/${customer._id}`, method='POST')
+            .d-flex.justify-content-between.gap-4
+                .mb-3.flex-fill
+                    label.form-label(for='exampleText2') Name
+                    input#exampleText2.form-control(type='text' name="name" autocomplete="off" required value=customer.name)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Phone
+                    input#exampleText3.form-control(type='tel' name="phone" autocomplete="off" required value=customer.phone)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Email
+                    input#exampleText3.form-control(type='email' name="email" autocomplete="off" value=customer.email)
+            .d-flex.justify-content-between.gap-4
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Address
+                    input#exampleText3.form-control(type='text' name="address" autocomplete="off" required value=customer.address)
+                .mb-2.flex-fill
+                    label.form-label(for='exampleText3') Loyalty Points
+                    select#exampleText3.form-select(type='text' name="loyaltyPoints" required value=customer.loyaltyInfo.loyaltyPoints)
+                        option(disabled) Select
+                        option(value=0 selected=(customer.loyaltyInfo.loyaltyPoints == 0)) 0
+                        option(value=1 selected=(customer.loyaltyInfo.loyaltyPoints == 1)) 1
+                        option(value=2 selected=(customer.loyaltyInfo.loyaltyPoints == 2)) 2
+                        option(value=3 selected=(customer.loyaltyInfo.loyaltyPoints == 3)) 3
+                        option(value=4 selected=(customer.loyaltyInfo.loyaltyPoints == 4)) 4
+                        option(value=5 selected=(customer.loyaltyInfo.loyaltyPoints == 5)) 5
+                        option(value=6 selected=(customer.loyaltyInfo.loyaltyPoints == 6)) 6
+                        option(value=7 selected=(customer.loyaltyInfo.loyaltyPoints == 7)) 7
+                        option(value=8 selected=(customer.loyaltyInfo.loyaltyPoints == 8)) 8
+                        option(value=9 selected=(customer.loyaltyInfo.loyaltyPoints == 9)) 9
+                        option(value=10 selected=(customer.loyaltyInfo.loyaltyPoints == 10)) 10
+
+            .d-flex.justify-content-between.gap-4
+                .mb-4.flex-fill
+                    label.form-label(for='exampleText3') Note
+                    textarea#exampleText3.form-control(type='text' name="note" rows="3") #{customer.note}
+
+            .d-grid
+                button.btn.btn-primary(type='submit') Update Cutomer
