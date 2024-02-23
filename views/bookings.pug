@@ -1,0 +1,123 @@
+extends ./layouts/adminLayout.pug
+include ./layouts/pagination.pug
+
+block content 
+    .container.my-5
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mb-3
+            a(href="/")
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="arrow-back")
+                    span Back to Home
+
+        .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3
+            .flex-fill
+                h1.my-0 Bookings
+                span.my-0
+                    if query || status 
+                        if query 
+                            | SEARCH TERM 
+                            i 
+                                b #{query.toUpperCase()} 
+                        if status 
+                            | WHICH ARE
+                            i 
+                                b #{status.toUpperCase()} 
+                    else
+                        span.my-0 ALL
+
+                    span.my-0.d-block
+                        | SHOWING
+                        i 
+                            b #{bookings.length} 
+                        | #{bookings.length > 1 ? "RESULTS" : "RESULT"}
+                        
+        if query || status
+            a(href="/bookings").d-block.fs-6.mt-3
+                button.btn.btn-primary.btn-icon.fs-6
+                    span.ms-2 Clear Filters 
+                    ion-icon(name="close")
+
+        h5.mt-4 Filter By Status
+        div
+            button.m-1.btn.border#statusFilter(data-status="pending" class=(status == "pending" ? "btn-primary text-light" : "btn-light text-dark")) Pending
+            button.m-1.btn.border#statusFilter(data-status="canceled" class=(status == "canceled" ? "btn-primary text-light" : "btn-light text-dark")) Canceled
+            button.m-1.btn.border#statusFilter(data-status="onhold" class=(status == "onhold" ? "btn-primary text-light" : "btn-light text-dark")) Onhold
+            button.m-1.btn.border#statusFilter(data-status="rejected" class=(status == "rejected" ? "btn-primary text-light" : "btn-light text-dark")) Rejected
+            button.m-1.btn.border#statusFilter(data-status="completed" class=(status == "completed" ? "btn-primary text-light" : "btn-light text-dark")) Completed
+            button.m-1.btn.border#statusFilter(data-status="" class=(status == "" ? "btn-primary text-light" : "btn-light text-dark")) All
+
+        form.search-form(action="/bookings", method="GET", data-action="/bookings")
+            .d-flex.justify-content-between.gap-3.align-items-center.mt-5 
+                input.form-control(type="text", name="q", placeholder="Search for a product" autocomplete="off" value=`${query}`)
+                button.btn.btn-primary.btn-icon
+                    ion-icon(name="search")
+
+
+        if bookings.length <= 0
+            .my-5.py-5.alert.alert-primary(role="alert")
+                h1.text-center No bookings found!
+                if query
+                    .d-flex.justify-content-center
+                        h2 For &nbsp;
+                        h2.fw-bold "#{query}"
+                .d-flex.justify-content-center
+                    a(href="/bookings")
+                        button.btn.btn-primary.btn-icon.mt-3
+                            span View All Bookings
+                            ion-icon(name="arrow-forward")
+
+        each booking in bookings
+            .card.my-3
+                .card-body
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
+                        .flex-fill
+                            span.card-subtitle.text-muted BOOKING OF
+                            a(href=`/bookings/${booking._id}`).basic-anchor
+                                h5.card-title.fw-600.mb-1.fs-3 #{booking.item.product.product.toUpperCase()}
+                            span.card-subtitle.text-muted ITEMS
+                                h5.card-title.fw-600.mb-1.fs-3 #{booking.item.quantity}
+                            span.card-subtitle.text-muted BY
+                            h5.card-title.fw-600.fs-4.text-success #{booking.user.name}
+                        .flex-fill.text-end
+                            span.card-subtitle.text-muted PHONE
+                            a(href=`tel:${booking.user.phone}`).basic-anchor.d-block #{booking.user.phone}
+                            span.card-subtitle.text-muted EMAIL
+                            a(href=`mailto:${booking.user.email}`).basic-anchor.d-block #{booking.user.email}                            
+                            span.card-subtitle.text-muted ADDRESS
+                            h5.card-title.fw-600.fs-4 #{booking.user.address}
+
+                    .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap.mt-3.border-top.pt-3
+                        .flex-fill
+                            p.card-subtitle.text-muted.mb-1 #{new Date(booking.createdAt).toDateString()}, #{new Date(booking.createdAt).toLocaleTimeString()}
+                    
+                    .d-grid.mt-3
+                        select.form-select#statusUpdateForm(name="status" data-id=booking._id)
+                            option(value="pending" selected=booking.status == "pending") Pending
+                            option(value="onhold" selected=booking.status == "onhold") Onhold
+                            option(value="completed" selected=booking.status == "completed") Completed
+                            option(value="canceled" selected=booking.status == "canceled") Canceled
+                            option(value="rejected" selected=booking.status == "rejected") Rejected
+
+        +pagination("/bookings", bookings, page, totalBookings, {q: query, status})
+    
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusFilter = document.querySelectorAll('#statusFilter');
+            statusFilter.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('status', filter.getAttribute('data-status'));
+                    window.location.href = `/bookings?${searchParams.toString()}`;
+                });
+            });
+        });
+
+        document.addEventListener('change', function(e) {
+            if (e.target.id === "statusUpdateForm") {
+                const url = new URL(window.location);
+                const searchParams = new URLSearchParams(url.search);
+                searchParams.set('status', e.target.value);
+                window.location.href = `/bookings/update?id=${e.target.getAttribute('data-id')}&status=${e.target.value}`;
+            }
+        });
