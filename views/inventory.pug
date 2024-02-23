@@ -34,14 +34,15 @@ block content
                             | WHICH ARE
                             i 
                                 b #{status.toUpperCase()} 
-                        
-                        span.my-0.d-block
-                            | SHOWING
-                            i 
-                                b #{inventory.length} 
-                            | #{inventory.length > 1 ? "RESULTS" : "RESULT"}
                     else
                         span.my-0 ALL
+
+                    span.my-0.d-block
+                        | SHOWING
+                        i 
+                            b #{inventory.length} 
+                        | #{inventory.length > 1 ? "RESULTS" : "RESULT"}
+                        
         if query || category || supplier || status
             a(href="/inventory").d-block.fs-6.mt-3
                 button.btn.btn-primary.btn-icon.fs-6
