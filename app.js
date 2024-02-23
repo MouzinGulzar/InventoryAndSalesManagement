@@ -9,11 +9,6 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 // dotenv config
 require("dotenv").config();
 
-var plotly = require("plotly")(
-  process.env.PLOTLY_USERNAME,
-  process.env.PLOTLY_API_KEY
-);
-
 // express app
 const app = express();
 
@@ -54,6 +49,8 @@ const categoryRoutes = require("./routes/categories");
 const userRoutes = require("./routes/users");
 const logsRoutes = require("./routes/logs");
 
+const bookRoutes = require("./routes/book");
+
 // Middleware Chain Here
 app.use(adminRoutes);
 app.use(dashboardRoutes);
@@ -64,6 +61,8 @@ app.use(supplierRoutes);
 app.use(categoryRoutes);
 app.use(userRoutes);
 app.use(logsRoutes);
+
+app.use(bookRoutes);
 
 // Connection to database
 async function connectToDatabase() {
