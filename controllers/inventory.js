@@ -31,7 +31,7 @@ exports.getInventory = async (req, res) => {
     db_filter.status = status;
   }
 
-  const inventory = await await InventoryModel.find(db_filter)
+  const inventory = await InventoryModel.find(db_filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit)
@@ -43,28 +43,13 @@ exports.getInventory = async (req, res) => {
 
   const totalItems = await InventoryModel.countDocuments(db_filter);
 
-  const categories = await CategoryModel.find();
-
-  // sort categories
-  categories.sort((a, b) => {
-    const nameA = a.name.toUpperCase();
-    const nameB = b.name.toUpperCase();
-
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-
-    return 0;
-  });
+  const categories = await CategoryModel.find().sort({ name: 1 });
 
   if (category) {
-    category = await CategoryModel.findById(category);
+    category = categories.find((c) => c._id.toString() === category);
   }
   if (supplier) {
-    supplier = await SupplierModel.findById(supplier);
+    supplier = suppliers.find((s) => s._id.toString() === supplier);
   }
 
   res.render(
