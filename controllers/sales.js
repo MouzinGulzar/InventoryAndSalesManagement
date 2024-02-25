@@ -1,6 +1,7 @@
 const moment = require("moment-timezone");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
+const fs = require("fs");
 
 const params = require("../utils/params");
 
@@ -170,11 +171,18 @@ exports.getAfterSale = async (req, res) => {
     .tz("Asia/Kolkata")
     .format("ddd MMM DD YYYY hh:mm A");
 
+  // get the invoice footer message from invoice-footer-text.txt file
+  const invoiceFooterText = fs.readFileSync(
+    "./public/data/invoice-footer-text.txt",
+    "utf8"
+  );
+
   res.render(
     "after-sale",
     Object.assign(params("Sales - After Sale", "/sales/after-sales"), {
       sale,
       invoiceDate,
+      invoiceFooterText,
       user: req.session.user,
     })
   );
