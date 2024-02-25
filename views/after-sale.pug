@@ -25,21 +25,26 @@ block content
 
             .invoice-container
                 .invoice
+                    .bg-light.py-4.mb-4
+                        img.d-block.mx-auto(src='/assets/imgs/logo-2d.png', alt='Logo', width='200')
                     .invoice__header
                         .invoice__header--company
-                            img.invoice__header--company-logo(src='/assets/imgs/logo-square.png', alt='Logo', width='100', height='100')
                             .invoice__header--company-info
                                 h2 Device Dynasty
-                                p Bandipora, J&K 193502
-                                a(href="tel:+916006569856") 6006569856 | 
-                                a(href="mailto:example@gmail.com") example@gmail.com
-                                //- p.text-body-tertiary.fw-bold
-                                //-     span GST: 
-                                    //- span 22AAAAA0000A1Z5
+                                p Near Gulshan Chowk, Bandipora
+                                p.text-body-tertiary.fw-bold
+                                    span GST: 
+                                    span 01CNIPN0551J1Z8
+                                a(href="tel:++918082720447").d-flex.align-items-center.gap-1.mt-3
+                                    ion-icon(name="call").fs-6
+                                    span 8082720447
                         .invoice__header--invoice-details
                             h2 Invoice
                             p.invoice__header--invoice-details--id ##{sale._id}
                             p Date: #{invoiceDate}
+                            a(href="mailto:example@gmail.com").d-flex.align-items-center.gap-1.mt-3
+                                ion-icon(name="mail").fs-6
+                                span contact@devicedynasty.in
                     .invoice__main
                         .invoice__body 
                             .invoice__body--customer
@@ -104,7 +109,7 @@ block content
                                             span Total 
                                             span ₹#{sale.totalSale - sale.discount}
                         .invoice__footer.mt-5
-                            p.invoice__footer--thanks Thank you for your business! ❤️
+                            p.invoice__footer--thanks #{invoiceFooterText}
     
             .d-grid.gap-2.mt-3
                 button.btn.btn-danger.btn-icon.confirm-first(data-url=`/sales/delete-sale/${sale._id}`)
