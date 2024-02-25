@@ -265,12 +265,6 @@ a ion-icon {
   align-items: center;
   justify-content: flex-start;
 }
-.invoice__header--company-logo {
-  width: 100px;
-  height: 100px;
-  margin-right: 20px;
-  border-radius: 100px;
-}
 .invoice__header--company-info h2 {
   margin: 0;
   font-size: 1.3rem;
@@ -296,6 +290,11 @@ a ion-icon {
   margin: 0;
   color: #777;
   font-weight: 600;
+  font-size: 0.9rem;
+}
+.invoice__header--invoice-details a {
+  text-decoration: none;
+  color: #777;
   font-size: 0.9rem;
 }
 .invoice__body {
