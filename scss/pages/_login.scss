@@ -1,6 +1,8 @@
 .login-page {
   overflow-y: hidden;
   overflow-x: hidden;
+  width: 100vw;
+  height: 100vh;
 
   &__bg {
     width: 100vw;
@@ -37,7 +39,7 @@
       }
       border-radius: 15px;
       background: transparent;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(5px);
       position: absolute;
       top: 50%;
@@ -57,7 +59,7 @@
         margin-bottom: 2rem;
         font-size: 1.2rem;
         font-weight: 500;
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.25);
         backdrop-filter: blur(5px);
         color: white;
         transition: all 0.1s ease-in-out;
@@ -87,7 +89,8 @@
       margin-bottom: 2rem;
       font-size: 1.2rem;
       font-weight: 500;
-      background: rgba(36, 51, 255, 0.3);
+      background: rgba(36, 51, 255, 0.75);
+      box-shadow: 0 0 50px 6px rgba(36, 51, 255, 0.75);
       backdrop-filter: blur(5px);
       color: white;
       transition: all 0.1s ease-in-out;
@@ -96,6 +99,7 @@
 
       &:hover {
         background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 0 50px 6px rgba(255, 255, 255, 0.75);
         color: rgba(36, 51, 255, 1);
         backdrop-filter: blur(5px);
       }
