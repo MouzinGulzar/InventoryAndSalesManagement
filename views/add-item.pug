@@ -12,11 +12,16 @@ block content
         form(action=`/inventory/add-item`, method='POST')
             .d-flex.justify-content-between.gap-4
                 .mb-3.flex-fill
+                    label.form-label(for='exampleText2') WSN
+                    input#exampleText2.form-control(type='text' name="wsn" autocomplete="off")
+                .mb-3.flex-fill
                     label.form-label(for='exampleText2') Product
                     input#exampleText2.form-control(type='text' name="product" autocomplete="off" required)
                 .mb-2.flex-fill
                     label.form-label(for='exampleText3') Quantity
                     input#exampleText3.form-control(type='number' name="quantity" autocomplete="off" required)
+
+            .d-flex.justify-content-between.gap-4
                 .mb-2.flex-fill
                     label.form-label(for='exampleText3') Unit Cost Price
                     input#exampleText3.form-control(type='number' step="any" name="unitCostPrice" required)

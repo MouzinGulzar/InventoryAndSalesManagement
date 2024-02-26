@@ -12,6 +12,8 @@ block content
                     span.ms-2 Edit Item
                     ion-icon(name="create")
         
+        if inventoryItem.wsn
+            span.d-block.fs-6.fw-bold WSN: #{inventoryItem.wsn}
         h1.my-0 #{inventoryItem.product.toUpperCase()}
         span
             | From 

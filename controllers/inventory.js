@@ -18,7 +18,11 @@ exports.getInventory = async (req, res) => {
   let db_filter = { quantity: { $gt: 0 } };
 
   if (query) {
-    db_filter.product = new RegExp(helpers.escapeRegex(query), "i");
+    // db_filter.product = new RegExp(helpers.escapeRegex(query), "i");
+    db_filter.$or = [
+      { product: new RegExp(helpers.escapeRegex(query), "i") },
+      { wsn: new RegExp(helpers.escapeRegex(query), "i") },
+    ];
   }
   if (category) {
     db_filter.category = category;
@@ -147,6 +151,7 @@ exports.getAddItem = async (req, res) => {
 // ADD NEW INVENTORY POST REQUEST
 exports.postAddItem = async (req, res) => {
   const {
+    wsn,
     product,
     unitCostPrice,
     unitSellPrice,
@@ -158,6 +163,7 @@ exports.postAddItem = async (req, res) => {
 
   try {
     const newInventoryItem = new InventoryModel({
+      wsn,
       product,
       unitCostPrice,
       unitSellPrice,
@@ -215,6 +221,8 @@ exports.getEditItem = async (req, res) => {
     })
     .populate({ path: "supplier", model: "suppliers" });
 
+  console.log(inventoryItem);
+
   const categories = await CategoryModel.find();
   // sort categories
   categories.sort((a, b) => {
@@ -261,6 +269,7 @@ exports.getEditItem = async (req, res) => {
 exports.postEditItem = async (req, res) => {
   const { id } = req.params;
   const {
+    wsn,
     productName,
     quantity,
     category,
@@ -276,6 +285,7 @@ exports.postEditItem = async (req, res) => {
       { _id: id },
       {
         $set: {
+          wsn,
           product: productName,
           quantity,
           category,

@@ -13,7 +13,10 @@ block content
         form(action=`/inventory/edit-item/${inventoryItem._id}`, method="post") 
             .d-flex.justify-content-between.gap-3.align-items-center.mt-3
                 .flex-fill
-                    label(for="productName") Name
+                    label(for='exampleText2') WSN
+                    input.form-control(type='text' name="wsn" autocomplete="off" value=inventoryItem.wsn)
+                .flex-fill
+                    label(for="productName") Product
                     input.form-control(type="text", name="productName", placeholder="Product Name" value=inventoryItem.product required autocomplete="off")
                 .flex-fill
                     label(for="quantity") Quanity
