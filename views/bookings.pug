@@ -72,7 +72,7 @@ block content
                     .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
                         .flex-fill
                             span.card-subtitle.text-muted BOOKING OF
-                            a(href=`/bookings/${booking._id}`).basic-anchor
+                            a(href=`/inventory/${booking.item.product._id}`).basic-anchor
                                 h5.card-title.fw-600.mb-1.fs-3 #{booking.item.product.product.toUpperCase()}
                             span.card-subtitle.text-muted ITEMS
                                 h5.card-title.fw-600.mb-1.fs-3 #{booking.item.quantity}
