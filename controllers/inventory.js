@@ -49,6 +49,8 @@ exports.getInventory = async (req, res) => {
 
   const categories = await CategoryModel.find().sort({ name: 1 });
 
+  const suppliers = await SupplierModel.find().sort({ name: 1 });
+
   if (category) {
     category = categories.find((c) => c._id.toString() === category);
   }
