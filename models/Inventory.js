@@ -10,7 +10,6 @@ const InventorySchema = new mongoose.Schema(
   {
     wsn: {
       type: String,
-      unique: true,
     },
     product: {
       type: String,
