@@ -52,9 +52,6 @@ exports.getLogs = async (req, res) => {
 
   const totalLogs = await Log.countDocuments(db_filter);
 
-  console.log(page);
-  console.log(logs);
-
   res.render(
     "logs",
     Object.assign(params("Logs", "/logs"), {
@@ -77,8 +74,6 @@ exports.getLog = async (req, res) => {
     model: "admins",
     select: "name",
   });
-
-  console.log(JSON.stringify(log, null, 2));
 
   res.render(
     "log",
