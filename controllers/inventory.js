@@ -180,8 +180,9 @@ exports.postAddItem = async (req, res) => {
     const supplierDetails = await SupplierModel.findById(supplier);
     const totalItemsBefore = supplierDetails.totalItems;
     const totalPurchasesBefore = supplierDetails.totalPurchases;
+    
     // update total items and total purchases for supplier
-    SupplierModel.updateOne(
+    await SupplierModel.updateOne(
       { _id: supplier },
       {
         $set: {
