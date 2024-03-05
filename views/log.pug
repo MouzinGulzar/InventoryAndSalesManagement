@@ -29,8 +29,11 @@ block content
                         span.d-block.fs-3 #{log.coll.toUpperCase()}
             .mb-3.flex-fill
                 span.d-block.card-subtitle.text-muted.fs-6.my-0 BY
-                a(href=`/logs?uid=${log.uid._id}`).basic-anchor
-                    span.d-block.fs-3 #{log.uid.name.toUpperCase()}
+                if log.uid._id
+                    a(href=`/logs?uid=${log.uid._id}`).basic-anchor
+                        span.d-block.fs-3 #{log.uid.name.toUpperCase()}
+                else
+                    span.d-block.fs-3 DELETED USER
         span.d-block.card-subtitle.text-muted.fs-6.my-0 ON
         span.d-block.fs-5.text-muted #{new Date(log.timestamp).toDateString()}, #{new Date(log.timestamp).toLocaleTimeString()}
 
