@@ -95,9 +95,13 @@ block content
                 .card-body
                     .d-flex.justify-content-between.gap-3.align-items-center.flex-wrap
                         .flex-fill
-                            a(href=`/logs?uid=${log.uid._id}`).basic-anchor
+                            if log.uid
+                                a(href=`/logs?uid=${log.uid._id}`).basic-anchor
+                                    span
+                                        | #{log.uid.name.toUpperCase()} 
+                            else 
                                 span
-                                    | #{log.uid.name.toUpperCase()} 
+                                    | DELETED USER
                             if log.opr == 'delete'
                                 | DELETED IN
                             else if log.opr == 'create'
