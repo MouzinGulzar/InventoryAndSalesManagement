@@ -337,7 +337,8 @@ exports.deleteSale = async (req, res) => {
             quantity: newQuantity,
             status: "active",
           },
-        }
+        },
+        { userId: req.session.user._id }
       );
     }
 
