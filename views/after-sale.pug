@@ -73,7 +73,7 @@ block content
                                                     td N/A
 
                                                 td #{product.quantity}
-                                                td ₹ #{(product.unitSellPrice).toFixed(2)}
+                                                td ₹ #{(product.unitSellPrice + (product.product.unitSellPrice - product.unitSellPrice)).toFixed(2)}
 
                                                 if product.product
                                                     if product.product.unitSellPrice > product.unitSellPrice
@@ -98,16 +98,16 @@ block content
                                 .invoice__body--details--total
                                         p 
                                             span Sub Total
-                                            span ₹#{sale.totalSale - (sale.totalSale * 0.18)}
+                                            span ₹#{(sale.totalSale + sale.discount) - (sale.totalSale * 0.18)}
                                         p
                                             span GST (18%)
-                                            span ₹#{(sale.totalSale * 0.18).toFixed(2)}
+                                            span ₹#{((sale.totalSale) * 0.18).toFixed(2)}
                                         p 
                                             span Discount
                                             span ₹#{sale.discount}
                                         div
                                             span Total 
-                                            span ₹#{sale.totalSale - sale.discount}
+                                            span ₹#{sale.totalSale}
                         .invoice__footer.mt-5
                             p.invoice__footer--thanks #{invoiceFooterText}
     
@@ -188,7 +188,7 @@ block content
                                 |  &#x20B9;#{sale.discount}
                             br
                             strong Total:
-                                |  &#x20B9;#{sale.totalSale - sale.discount}
+                                |  &#x20B9;#{sale.totalSale}
 
                         div
                             p(style="font-weight: 500; margin: 0; padding: 0;") Payment Method
